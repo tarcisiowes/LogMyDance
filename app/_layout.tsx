@@ -82,6 +82,10 @@ export default function RootLayout() {
               name="settings"
               options={{ title: t('settings.title'), presentation: 'card' }}
             />
+            <Stack.Screen
+              name="privacy"
+              options={{ title: t('nav.privacy'), presentation: 'card' }}
+            />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           </Stack>
         </DbProvider>

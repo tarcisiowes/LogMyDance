@@ -25,6 +25,7 @@ export const en = {
     template: 'Template',
     manageTags: 'Manage Tags',
     storageBackup: 'Storage & Backup',
+    privacy: 'Privacy policy',
   },
   tabs: {
     journal: 'Journal',
@@ -85,6 +86,7 @@ export const en = {
     beta: 'Beta',
     sendFeedback: 'Send feedback',
     resetOnboarding: 'Reset onboarding',
+    privacy: 'Privacy policy',
   },
   forms: {
     date: 'Date',

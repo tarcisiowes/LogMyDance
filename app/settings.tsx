@@ -1,7 +1,7 @@
 import { Linking, ScrollView, Text, View, Pressable } from 'react-native';
 import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check, ChevronRight, MessageSquare, RotateCcw } from 'lucide-react-native';
+import { Check, ChevronRight, MessageSquare, RotateCcw, Shield } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { SUPPORTED_LANGUAGES, changeLanguage } from '@/i18n';
 import { preferences } from '@/stores/preferences';
@@ -84,9 +84,19 @@ export default function SettingsScreen() {
         <Text className="text-neutral-400 text-sm font-medium uppercase tracking-wider">
           {t('settings.about')}
         </Text>
-        <View className="bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3.5 flex-row items-center justify-between">
-          <Text className="text-neutral-100 text-base">{t('settings.version')}</Text>
-          <Text className="text-neutral-500 text-base">{version}</Text>
+        <View className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
+          <Pressable
+            onPress={() => router.push('/privacy' as Href)}
+            className="flex-row items-center gap-3 px-4 py-3.5 active:bg-neutral-800"
+          >
+            <Shield color="#a855f7" size={20} />
+            <Text className="text-neutral-100 text-base flex-1">{t('settings.privacy')}</Text>
+            <ChevronRight color="#525252" size={18} />
+          </Pressable>
+          <View className="flex-row items-center justify-between px-4 py-3.5 border-t border-neutral-800">
+            <Text className="text-neutral-100 text-base">{t('settings.version')}</Text>
+            <Text className="text-neutral-500 text-base">{version}</Text>
+          </View>
         </View>
       </View>
     </ScrollView>

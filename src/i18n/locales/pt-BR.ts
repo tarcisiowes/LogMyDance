@@ -27,6 +27,7 @@ export const ptBR: TranslationSchema = {
     template: 'Modelo',
     manageTags: 'Gerenciar tags',
     storageBackup: 'Armazenamento e backup',
+    privacy: 'Política de privacidade',
   },
   tabs: {
     journal: 'Diário',
@@ -87,6 +88,7 @@ export const ptBR: TranslationSchema = {
     beta: 'Beta',
     sendFeedback: 'Enviar feedback',
     resetOnboarding: 'Reiniciar introdução',
+    privacy: 'Política de privacidade',
   },
   forms: {
     date: 'Data',

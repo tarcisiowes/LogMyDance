@@ -22,3 +22,4 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Sprint 4 — Deep-screen i18n (full EN/PT-BR) | [12](2026-06-13-12-deep-screen-i18n.md) |
 | 2026-06-13 | Sprint 4 — Sentry (crash-only) | [13](2026-06-13-13-sentry-crash-only.md) |
 | 2026-06-13 | Sprint 5 — Beta polish (diagnostics/feedback) | [14](2026-06-13-14-beta-polish.md) |
+| 2026-06-13 | Sprint 7 — Compliance code (privacy/R8/dep gate) | [15](2026-06-13-15-sprint7-compliance.md) |
