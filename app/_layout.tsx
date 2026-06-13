@@ -90,6 +90,14 @@ export default function RootLayout() {
               name="categories"
               options={{ title: t('nav.categories'), presentation: 'card' }}
             />
+            <Stack.Screen
+              name="sequence/new"
+              options={{ title: t('sequences.newSequence'), presentation: 'modal' }}
+            />
+            <Stack.Screen
+              name="sequence/[id]"
+              options={{ title: t('sequences.title'), presentation: 'card' }}
+            />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           </Stack>
         </DbProvider>

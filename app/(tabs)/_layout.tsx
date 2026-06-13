@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Dumbbell, LayoutTemplate, BarChart2 } from 'lucide-react-native';
+import { BookOpen, Dumbbell, Film, LayoutTemplate, BarChart2 } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -33,6 +33,15 @@ export default function TabLayout() {
           title: t('tabs.movements'),
           tabBarIcon: ({ color, size }) => (
             <Dumbbell color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="sequences"
+        options={{
+          title: t('sequences.title'),
+          tabBarIcon: ({ color, size }) => (
+            <Film color={color} size={size} />
           ),
         }}
       />
