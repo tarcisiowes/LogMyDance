@@ -39,10 +39,15 @@
       "expo-video",
       "expo-image",
       "expo-sharing",
-      "expo-localization"
+      "expo-localization",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "sentryDsn": "",
+      "feedbackEmail": ""
     }
   }
 }

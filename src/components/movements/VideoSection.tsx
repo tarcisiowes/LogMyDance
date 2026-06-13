@@ -9,6 +9,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Play, Pause, Video, Trash2 } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { mediaRepo, ensureMediaDirs, videoPath, thumbPath } from '@/repositories/media';
+import { captureError } from '@/services/sentry';
 import { newUUID } from '@/utils/uuid';
 import type { MediaAsset } from '@/types';
 
@@ -94,6 +95,7 @@ export function VideoSection({
 
       onMediaChanged();
     } catch (e) {
+      captureError(e, 'file_import_failed');
       Alert.alert(t('video.importFailedTitle'), t('video.importFailedBody'));
     } finally {
       setImporting(false);
@@ -231,8 +233,9 @@ async function generateAndSaveThumbnail(
       width: thumbnail.width,
       height: thumbnail.height,
     });
-  } catch {
+  } catch (err) {
     // Thumbnail generation failed silently — video still works
+    captureError(err, 'video_thumbnail_failed');
   } finally {
     tempPlayer?.release?.();
   }

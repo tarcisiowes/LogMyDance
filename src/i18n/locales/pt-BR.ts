@@ -71,6 +71,7 @@ export const ptBR: TranslationSchema = {
     storageBackupDesc: 'Exportar, importar e gerenciar mídia',
     settings: 'Configurações',
     settingsDesc: 'Idioma, tema e mais',
+    shareDiagnostics: 'Compartilhar diagnóstico',
   },
   settings: {
     title: 'Configurações',
@@ -83,6 +84,9 @@ export const ptBR: TranslationSchema = {
     version: 'Versão',
     languageEnglish: 'English',
     languagePortuguese: 'Português (Brasil)',
+    beta: 'Beta',
+    sendFeedback: 'Enviar feedback',
+    resetOnboarding: 'Reiniciar introdução',
   },
   forms: {
     date: 'Data',

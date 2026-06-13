@@ -1,8 +1,10 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Share, ScrollView, Text, View } from 'react-native';
 import { useCallback, useState } from 'react';
 import { router, useFocusEffect, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Database, ChevronRight, Settings, Flame } from 'lucide-react-native';
+import { differenceInCalendarDays, parseISO } from 'date-fns';
+import Constants from 'expo-constants';
+import { Database, ChevronRight, Settings, Flame, Share2 } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { Card } from '@/components/ui/Card';
 import { statsRepo, type StatsData } from '@/repositories/stats';
@@ -33,9 +35,29 @@ function formatPracticeTime(min: number): string {
 
 export default function StatsScreen() {
   const db = useDb();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState<StatsData>(EMPTY);
   const [appOpens, setAppOpens] = useState(0);
+
+  const shareDiagnostics = useCallback(() => {
+    const installDate = preferences.getInstallDate();
+    const daysSinceInstall = installDate
+      ? differenceInCalendarDays(new Date(), parseISO(installDate))
+      : 0;
+    const lines = [
+      'Log My Dance — beta diagnostics',
+      `version: ${Constants.expoConfig?.version ?? '1.0.0'}`,
+      `language: ${i18n.language}`,
+      `entries: ${stats.totalEntries}`,
+      `movements: ${stats.totalMovements}`,
+      `practice_min: ${stats.totalMinutes}`,
+      `current_streak: ${stats.currentStreak}`,
+      `longest_streak: ${stats.longestStreak}`,
+      `app_opens: ${appOpens}`,
+      `days_since_install: ${daysSinceInstall}`,
+    ];
+    Share.share({ message: lines.join('\n') });
+  }, [stats, appOpens, i18n.language]);
 
   useFocusEffect(
     useCallback(() => {
@@ -152,6 +174,14 @@ export default function StatsScreen() {
         <MiniStat value={appOpens} label={t('stats.appOpens')} />
         <MiniStat value={stats.longestStreak} label={t('stats.longestStreak')} />
       </View>
+
+      <Card className="flex-row items-center gap-3" onPress={shareDiagnostics}>
+        <Share2 color="#a855f7" size={20} />
+        <Text className="text-neutral-100 font-semibold flex-1">
+          {t('stats.shareDiagnostics')}
+        </Text>
+        <ChevronRight color="#525252" size={18} />
+      </Card>
 
       <Card
         className="mt-2 flex-row items-center gap-3"

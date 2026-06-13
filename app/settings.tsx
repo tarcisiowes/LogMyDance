@@ -1,8 +1,10 @@
-import { ScrollView, Text, View, Pressable } from 'react-native';
+import { Linking, ScrollView, Text, View, Pressable } from 'react-native';
+import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react-native';
+import { Check, ChevronRight, MessageSquare, RotateCcw } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { SUPPORTED_LANGUAGES, changeLanguage } from '@/i18n';
+import { preferences } from '@/stores/preferences';
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -11,6 +13,18 @@ export default function SettingsScreen() {
 
   const languageLabel = (lng: string) =>
     lng === 'pt-BR' ? t('settings.languagePortuguese') : t('settings.languageEnglish');
+
+  const sendFeedback = () => {
+    const email =
+      (Constants.expoConfig?.extra as { feedbackEmail?: string } | undefined)?.feedbackEmail ?? '';
+    const subject = encodeURIComponent('Log My Dance — feedback');
+    Linking.openURL(`mailto:${email}?subject=${subject}`).catch(() => {});
+  };
+
+  const resetOnboarding = () => {
+    preferences.resetOnboarding();
+    router.replace('/onboarding' as Href);
+  };
 
   return (
     <ScrollView
@@ -39,6 +53,30 @@ export default function SettingsScreen() {
               </Pressable>
             );
           })}
+        </View>
+      </View>
+
+      <View className="gap-2">
+        <Text className="text-neutral-400 text-sm font-medium uppercase tracking-wider">
+          {t('settings.beta')}
+        </Text>
+        <View className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
+          <Pressable
+            onPress={sendFeedback}
+            className="flex-row items-center gap-3 px-4 py-3.5 active:bg-neutral-800"
+          >
+            <MessageSquare color="#a855f7" size={20} />
+            <Text className="text-neutral-100 text-base flex-1">{t('settings.sendFeedback')}</Text>
+            <ChevronRight color="#525252" size={18} />
+          </Pressable>
+          <Pressable
+            onPress={resetOnboarding}
+            className="flex-row items-center gap-3 px-4 py-3.5 border-t border-neutral-800 active:bg-neutral-800"
+          >
+            <RotateCcw color="#a855f7" size={20} />
+            <Text className="text-neutral-100 text-base flex-1">{t('settings.resetOnboarding')}</Text>
+            <ChevronRight color="#525252" size={18} />
+          </Pressable>
         </View>
       </View>
 

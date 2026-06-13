@@ -10,11 +10,15 @@ import { DbProvider, useDb } from '@/db/context';
 import { initDatabase } from '@/db/setup';
 import { mediaRepo } from '@/repositories/media';
 import { preferences } from '@/stores/preferences';
+import { initSentry } from '@/services/sentry';
+
+initSentry();
 
 function AppStartup() {
   const db = useDb();
   useEffect(() => {
     preferences.incrementAppOpens();
+    preferences.ensureInstallDate();
     // Silent orphan cleanup on each startup
     mediaRepo(db).cleanupOrphans().catch(() => {});
     if (!preferences.isOnboardingComplete()) {

@@ -17,6 +17,7 @@ import {
   type PreparedBackup,
 } from '@/services/backup/import';
 import { BackupError, type ConflictMode } from '@/services/backup/types';
+import { captureError } from '@/services/sentry';
 
 export default function StorageScreen() {
   const db = useDb();
@@ -53,6 +54,7 @@ export default function StorageScreen() {
       const zipUri = await exportBackup(sqlite);
       await shareBackup(zipUri);
     } catch (e) {
+      captureError(e, 'export_failed');
       Alert.alert(t('storage.exportFailedTitle'), t('storage.exportFailedBody'));
     } finally {
       setExporting(false);
@@ -74,6 +76,7 @@ export default function StorageScreen() {
         }
         Alert.alert(t('storage.importCompleteTitle'), lines.join('\n'));
       } catch (e) {
+        captureError(e, 'restore_failed');
         await cancelImport(prepared).catch(() => {});
         Alert.alert(t('storage.importFailedTitle'), t('storage.importFailedNoChanges'));
       } finally {

@@ -69,6 +69,7 @@ export const en = {
     storageBackupDesc: 'Export, import, and manage media',
     settings: 'Settings',
     settingsDesc: 'Language, theme and more',
+    shareDiagnostics: 'Share diagnostics',
   },
   settings: {
     title: 'Settings',
@@ -81,6 +82,9 @@ export const en = {
     version: 'Version',
     languageEnglish: 'English',
     languagePortuguese: 'Português (Brasil)',
+    beta: 'Beta',
+    sendFeedback: 'Send feedback',
+    resetOnboarding: 'Reset onboarding',
   },
   forms: {
     date: 'Date',
