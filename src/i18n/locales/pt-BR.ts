@@ -295,5 +295,9 @@ export const ptBR: TranslationSchema = {
     movementsCount: '{{count}} movimentos',
     saved: 'Sequência salva',
     errorSave: 'Não foi possível salvar a sequência.',
+    exportVideo: 'Salvar como vídeo único',
+    merging: 'Juntando clipes… pode demorar um pouco.',
+    exportVideoFailed: 'Não foi possível criar o vídeo. Verifique se todos os clipes têm áudio e tente de novo.',
+    exportVideoUnavailable: 'Juntar vídeo precisa de rebuild nativo. Instale o módulo FFmpeg e recompile o app.',
   },
 };

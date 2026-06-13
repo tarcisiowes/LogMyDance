@@ -293,6 +293,10 @@ export const en = {
     movementsCount: '{{count}} movements',
     saved: 'Sequence saved',
     errorSave: 'Could not save the sequence.',
+    exportVideo: 'Save as one video',
+    merging: 'Merging clips… this can take a while.',
+    exportVideoFailed: 'Could not create the video. Make sure every clip has audio, then try again.',
+    exportVideoUnavailable: 'Video merge needs a native rebuild. Install the FFmpeg module and rebuild the app.',
   },
 };
 

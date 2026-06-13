@@ -4,11 +4,13 @@ import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Trash2, Film } from 'lucide-react-native';
+import * as Sharing from 'expo-sharing';
 import { useDb } from '@/db/context';
 import { sequencesRepo, type SequenceClip, type SequenceRow } from '@/repositories/sequences';
 import { SequencePlayer, type SequenceClipSource } from '@/components/sequence/SequencePlayer';
 import { Button } from '@/components/ui/Button';
 import { exportSequence } from '@/services/sequence-export';
+import { concatSequenceToMp4, isConcatAvailable } from '@/services/sequence-concat';
 
 export default function SequenceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,6 +20,7 @@ export default function SequenceDetailScreen() {
   const [sequence, setSequence] = useState<SequenceRow | null>(null);
   const [clips, setClips] = useState<SequenceClip[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [merging, setMerging] = useState(false);
 
   const load = useCallback(async () => {
     const repo = sequencesRepo(db);
@@ -75,6 +78,29 @@ export default function SequenceDetailScreen() {
     }
   };
 
+  const onSaveVideo = async () => {
+    if (!sequence) return;
+    if (!isConcatAvailable()) {
+      Alert.alert(t('sequences.exportVideo'), t('sequences.exportVideoUnavailable'));
+      return;
+    }
+    try {
+      setMerging(true);
+      const out = await concatSequenceToMp4(sequence.name, playable);
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(out, {
+          mimeType: 'video/mp4',
+          dialogTitle: t('sequences.exportVideo'),
+          UTI: 'public.mpeg-4',
+        });
+      }
+    } catch {
+      Alert.alert(t('common.error'), t('sequences.exportVideoFailed'));
+    } finally {
+      setMerging(false);
+    }
+  };
+
   return (
     <ScrollView
       className="flex-1 bg-neutral-950"
@@ -107,12 +133,26 @@ export default function SequenceDetailScreen() {
         ))}
       </View>
 
-      <Button
-        label={t('sequences.export')}
-        variant="secondary"
-        onPress={onExport}
-        loading={exporting}
-      />
+      <View className="gap-2">
+        {playable.length >= 2 ? (
+          <Button
+            label={t('sequences.exportVideo')}
+            onPress={onSaveVideo}
+            loading={merging}
+          />
+        ) : null}
+        <Button
+          label={t('sequences.export')}
+          variant="secondary"
+          onPress={onExport}
+          loading={exporting}
+        />
+        {merging ? (
+          <Text className="text-neutral-500 text-xs text-center">
+            {t('sequences.merging')}
+          </Text>
+        ) : null}
+      </View>
     </ScrollView>
   );
 }
