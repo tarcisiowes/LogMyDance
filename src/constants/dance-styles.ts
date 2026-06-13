@@ -1,0 +1,17 @@
+export const DEFAULT_DANCE_STYLES = [
+  { name: 'Bachata', icon: '💃' },
+  { name: 'Salsa', icon: '🔥' },
+  { name: 'Kizomba', icon: '🌹' },
+  { name: 'Zouk', icon: '🌀' },
+  { name: 'Tango', icon: '🎭' },
+  { name: 'West Coast Swing', icon: '🌊' },
+  { name: 'Hip Hop', icon: '🎤' },
+  { name: 'Contemporary', icon: '🎨' },
+  { name: 'Ballet', icon: '🩰' },
+  { name: 'Jazz', icon: '🎷' },
+  { name: 'Merengue', icon: '🥁' },
+  { name: 'Cumbia', icon: '🌺' },
+  { name: 'Forró', icon: '🎸' },
+  { name: 'Samba', icon: '🌟' },
+  { name: 'Reggaeton', icon: '🎵' },
+] as const;

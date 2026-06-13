@@ -1,12 +1,49 @@
 {
   "name": "logmydance",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@shopify/flash-list": "2.0.2",
+    "babel-preset-expo": "~56.0.0",
+    "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.38.3",
     "expo": "~56.0.4",
+    "expo-constants": "~56.0.15",
+    "expo-crypto": "~56.0.4",
+    "expo-document-picker": "~56.0.4",
+    "expo-file-system": "~56.0.7",
+    "expo-image": "~56.0.9",
+    "expo-image-manipulator": "~56.0.14",
+    "expo-image-picker": "~56.0.13",
+    "expo-linking": "~56.0.11",
+    "expo-router": "~56.2.6",
+    "expo-sharing": "~56.0.17",
+    "expo-sqlite": "~56.0.4",
     "expo-status-bar": "~56.0.4",
+    "expo-video": "~56.1.2",
+    "lucide-react-native": "^0.475.0",
+    "nativewind": "^4.1.23",
     "react": "19.2.3",
-    "react-native": "0.85.3"
+    "react-hook-form": "^7.54.2",
+    "react-native": "0.85.3",
+    "react-native-css-interop": "^0.2.4",
+    "react-native-gesture-handler": "~2.31.1",
+    "react-native-mmkv": "^3.1.0",
+    "react-native-reanimated": "4.3.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-svg": "15.15.4",
+    "react-native-zip-archive": "^8.0.1",
+    "zod": "^3.24.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "drizzle-kit": "^0.30.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^6.0.3"
   },
   "publishConfig": {
     "executableFiles": [
@@ -17,7 +54,14 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "db:generate": "drizzle-kit generate",
+    "check-deps": "npx expo install --check"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom",
+    "@types/react": "^19.2.0"
   },
   "private": true
 }

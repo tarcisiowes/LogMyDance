@@ -2,6 +2,46 @@
   "expo": {
     "name": "LogMyDance",
     "slug": "LogMyDance",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "scheme": "logmydance",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.logmydance.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Log My Dance needs access to your photo library to import dance videos.",
+        "NSCameraUsageDescription": "Log My Dance needs camera access to record dance videos."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a0a"
+      },
+      "package": "com.logmydance.app",
+      "targetSdkVersion": 35
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": false,
+          "useSQLCipher": false
+        }
+      ],
+      "expo-video",
+      "expo-image",
+      "expo-sharing"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
