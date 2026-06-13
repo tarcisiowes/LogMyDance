@@ -7,8 +7,10 @@ import { Trash2, Film } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { sequencesRepo, type SequenceClip, type SequenceRow } from '@/repositories/sequences';
 import { SequencePlayer, type SequenceClipSource } from '@/components/sequence/SequencePlayer';
+import { BpmControl } from '@/components/sequence/BpmControl';
 import { Button } from '@/components/ui/Button';
 import { exportSequence } from '@/services/sequence-export';
+import { naturalBpm, medianBpm, clampBpm } from '@/utils/tempo';
 
 export default function SequenceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,6 +19,9 @@ export default function SequenceDetailScreen() {
   const { t } = useTranslation();
   const [sequence, setSequence] = useState<SequenceRow | null>(null);
   const [clips, setClips] = useState<SequenceClip[]>([]);
+  const [stepsMap, setStepsMap] = useState<Map<string, number[]>>(new Map());
+  const [targetBpm, setTargetBpm] = useState(120);
+  const [syncEnabled, setSyncEnabled] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const load = useCallback(async () => {
@@ -26,8 +31,13 @@ export default function SequenceDetailScreen() {
       router.back();
       return;
     }
+    const sm = await repo.getStepsForMovements(items.map((i) => i.movementId));
+    const bpms = items.map((i) => naturalBpm(sm.get(i.movementId) ?? []));
     setSequence(seq);
     setClips(items);
+    setStepsMap(sm);
+    setTargetBpm(clampBpm(medianBpm(bpms)));
+    setSyncEnabled(bpms.some((b) => b != null));
   }, [id, db]);
 
   useEffect(() => {
@@ -61,7 +71,14 @@ export default function SequenceDetailScreen() {
 
   const playable: SequenceClipSource[] = clips
     .filter((c) => !!c.videoPath)
-    .map((c) => ({ movementId: c.movementId, name: c.name, videoPath: c.videoPath as string }));
+    .map((c) => ({
+      movementId: c.movementId,
+      name: c.name,
+      videoPath: c.videoPath as string,
+      times: stepsMap.get(c.movementId),
+    }));
+
+  const hasMarkers = playable.some((c) => (c.times?.length ?? 0) >= 2);
 
   const onExport = async () => {
     if (!sequence) return;
@@ -80,7 +97,19 @@ export default function SequenceDetailScreen() {
       className="flex-1 bg-neutral-950"
       contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 48 }}
     >
-      {playable.length > 0 ? <SequencePlayer clips={playable} /> : null}
+      {playable.length > 0 ? (
+        <SequencePlayer clips={playable} tempoSync={{ enabled: syncEnabled, targetBpm }} />
+      ) : null}
+
+      {playable.length > 0 ? (
+        <BpmControl
+          enabled={syncEnabled}
+          onToggle={setSyncEnabled}
+          bpm={targetBpm}
+          onBpm={setTargetBpm}
+          disabled={!hasMarkers}
+        />
+      ) : null}
 
       <View className="gap-2">
         {clips.map((clip, i) => (

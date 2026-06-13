@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, type Href } from 'expo-router';
 import { Image } from 'expo-image';
@@ -13,8 +13,10 @@ import {
 import { sequencesRepo, type MovementMedia } from '@/repositories/sequences';
 import { AttributeSelector } from '@/components/attributes/AttributeSelector';
 import { SequencePlayer, type SequenceClipSource } from '@/components/sequence/SequencePlayer';
+import { BpmControl } from '@/components/sequence/BpmControl';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { naturalBpm, medianBpm, clampBpm } from '@/utils/tempo';
 
 export default function NewSequenceScreen() {
   const db = useDb();
@@ -24,9 +26,13 @@ export default function NewSequenceScreen() {
   const [results, setResults] = useState<FilteredMovement[]>([]);
   const [media, setMedia] = useState<Map<string, MovementMedia>>(new Map());
   const [built, setBuilt] = useState<string[]>([]);
+  const [steps, setSteps] = useState<Map<string, number[]>>(new Map());
+  const [targetBpm, setTargetBpm] = useState(120);
+  const [syncEnabled, setSyncEnabled] = useState(false);
   const [name, setName] = useState('');
   const [playing, setPlaying] = useState(false);
   const [saving, setSaving] = useState(false);
+  const bpmTouched = useRef(false);
 
   useEffect(() => {
     attributesRepo(db).getDimensionsWithValues().then(setDimensions).catch(() => {});
@@ -63,10 +69,47 @@ export default function NewSequenceScreen() {
     setPlaying(false);
   }, []);
 
+  // Load step markers for the built clips; auto-default the target BPM (median)
+  // and sync toggle until the user adjusts them.
+  useEffect(() => {
+    let active = true;
+    sequencesRepo(db)
+      .getStepsForMovements(built)
+      .then((sm) => {
+        if (!active) return;
+        setSteps(sm);
+        if (!bpmTouched.current) {
+          const bpms = built.map((id) => naturalBpm(sm.get(id) ?? []));
+          setTargetBpm(clampBpm(medianBpm(bpms)));
+          setSyncEnabled(bpms.some((b) => b != null));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [db, built]);
+
+  const onToggleSync = (v: boolean) => {
+    bpmTouched.current = true;
+    setSyncEnabled(v);
+  };
+  const onChangeBpm = (v: number) => {
+    bpmTouched.current = true;
+    setTargetBpm(v);
+  };
+
   const clips: SequenceClipSource[] = built
     .map((id) => media.get(id))
     .filter((m): m is MovementMedia => !!m && !!m.videoPath)
-    .map((m) => ({ movementId: m.id, name: m.name, videoPath: m.videoPath as string }));
+    .map((m) => ({
+      movementId: m.id,
+      name: m.name,
+      videoPath: m.videoPath as string,
+      times: steps.get(m.id),
+    }));
+
+  const hasMarkers = clips.some((c) => (c.times?.length ?? 0) >= 2);
 
   const onSave = async () => {
     const trimmed = name.trim();
@@ -104,7 +147,21 @@ export default function NewSequenceScreen() {
           </View>
 
           {playing && clips.length > 0 ? (
-            <SequencePlayer key={built.join('-')} clips={clips} />
+            <SequencePlayer
+              key={built.join('-')}
+              clips={clips}
+              tempoSync={{ enabled: syncEnabled, targetBpm }}
+            />
+          ) : null}
+
+          {clips.length > 0 ? (
+            <BpmControl
+              enabled={syncEnabled}
+              onToggle={onToggleSync}
+              bpm={targetBpm}
+              onBpm={onChangeBpm}
+              disabled={!hasMarkers}
+            />
           ) : null}
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
