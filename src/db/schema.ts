@@ -106,3 +106,50 @@ export const appMetadata = sqliteTable('app_metadata', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
 });
+
+export const attributeDimensions = sqliteTable('attribute_dimensions', {
+  id: text('id').primaryKey(),
+  key: text('key').notNull().unique(),
+  label: text('label'),
+  selection: text('selection').notNull().default('single'),
+  position: integer('position').notNull().default(0),
+  isCustom: integer('is_custom').notNull().default(0),
+});
+
+export const attributeValues = sqliteTable('attribute_values', {
+  id: text('id').primaryKey(),
+  dimensionId: text('dimension_id')
+    .notNull()
+    .references(() => attributeDimensions.id, { onDelete: 'cascade' }),
+  key: text('key'),
+  label: text('label'),
+  position: integer('position').notNull().default(0),
+  isCustom: integer('is_custom').notNull().default(0),
+});
+
+export const movementAttributes = sqliteTable('movement_attributes', {
+  movementId: text('movement_id')
+    .notNull()
+    .references(() => movements.id, { onDelete: 'cascade' }),
+  valueId: text('value_id')
+    .notNull()
+    .references(() => attributeValues.id, { onDelete: 'cascade' }),
+});
+
+export const sequences = sqliteTable('sequences', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const sequenceItems = sqliteTable('sequence_items', {
+  id: text('id').primaryKey(),
+  sequenceId: text('sequence_id')
+    .notNull()
+    .references(() => sequences.id, { onDelete: 'cascade' }),
+  movementId: text('movement_id')
+    .notNull()
+    .references(() => movements.id, { onDelete: 'cascade' }),
+  position: integer('position').notNull(),
+});

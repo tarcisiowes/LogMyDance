@@ -1,7 +1,7 @@
 import { Linking, ScrollView, Text, View, Pressable } from 'react-native';
 import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check, ChevronRight, MessageSquare, RotateCcw, Shield } from 'lucide-react-native';
+import { Check, ChevronRight, Layers, MessageSquare, RotateCcw, Shield } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { SUPPORTED_LANGUAGES, changeLanguage } from '@/i18n';
 import { preferences } from '@/stores/preferences';
@@ -53,6 +53,19 @@ export default function SettingsScreen() {
               </Pressable>
             );
           })}
+        </View>
+      </View>
+
+      <View className="gap-2">
+        <View className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
+          <Pressable
+            onPress={() => router.push('/categories' as Href)}
+            className="flex-row items-center gap-3 px-4 py-3.5 active:bg-neutral-800"
+          >
+            <Layers color="#a855f7" size={20} />
+            <Text className="text-neutral-100 text-base flex-1">{t('settings.categories')}</Text>
+            <ChevronRight color="#525252" size={18} />
+          </Pressable>
         </View>
       </View>
 

@@ -1,7 +1,9 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { DEFAULT_DANCE_STYLES } from '@/constants/dance-styles';
+import { FORRO_ATTRIBUTES } from '@/constants/forro-attributes';
+import { newUUID } from '@/utils/uuid';
 
-const SCHEMA_VERSION = '1';
+const SCHEMA_VERSION = '2';
 
 export async function initDatabase(db: SQLiteDatabase): Promise<void> {
   await db.execAsync('PRAGMA journal_mode = WAL');
@@ -103,7 +105,49 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
       status TEXT NOT NULL DEFAULT 'ready',
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS attribute_dimensions (
+      id TEXT PRIMARY KEY,
+      key TEXT NOT NULL UNIQUE,
+      label TEXT,
+      selection TEXT NOT NULL DEFAULT 'single',
+      position INTEGER NOT NULL DEFAULT 0,
+      is_custom INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS attribute_values (
+      id TEXT PRIMARY KEY,
+      dimension_id TEXT NOT NULL REFERENCES attribute_dimensions(id) ON DELETE CASCADE,
+      key TEXT,
+      label TEXT,
+      position INTEGER NOT NULL DEFAULT 0,
+      is_custom INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS movement_attributes (
+      movement_id TEXT NOT NULL REFERENCES movements(id) ON DELETE CASCADE,
+      value_id TEXT NOT NULL REFERENCES attribute_values(id) ON DELETE CASCADE,
+      PRIMARY KEY (movement_id, value_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS sequences (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS sequence_items (
+      id TEXT PRIMARY KEY,
+      sequence_id TEXT NOT NULL REFERENCES sequences(id) ON DELETE CASCADE,
+      movement_id TEXT NOT NULL REFERENCES movements(id) ON DELETE CASCADE,
+      position INTEGER NOT NULL
+    );
   `);
+
+  // Idempotent: seeds the default forró taxonomy once. Covers both fresh
+  // installs and upgrades (runs whenever the dimensions table is empty).
+  await seedAttributes(db);
 
   const meta = await db.getFirstAsync<{ value: string }>(
     'SELECT value FROM app_metadata WHERE key = ?',
@@ -118,7 +162,7 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     );
     await db.runAsync(
       'INSERT INTO app_metadata (key, value) VALUES (?, ?)',
-      ['backup_version_supported', '1']
+      ['backup_version_supported', '2']
     );
   }
 }
@@ -129,5 +173,28 @@ async function seedDatabase(db: SQLiteDatabase): Promise<void> {
       'INSERT OR IGNORE INTO styles (name, icon, is_custom) VALUES (?, ?, 0)',
       [style.name, style.icon]
     );
+  }
+}
+
+async function seedAttributes(db: SQLiteDatabase): Promise<void> {
+  const existing = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM attribute_dimensions'
+  );
+  if (existing && existing.count > 0) return;
+
+  let dimPos = 0;
+  for (const dim of FORRO_ATTRIBUTES) {
+    const dimId = newUUID();
+    await db.runAsync(
+      'INSERT INTO attribute_dimensions (id, key, label, selection, position, is_custom) VALUES (?, ?, ?, ?, ?, 0)',
+      [dimId, dim.key, dim.label, dim.selection, dimPos++]
+    );
+    let valPos = 0;
+    for (const val of dim.values) {
+      await db.runAsync(
+        'INSERT INTO attribute_values (id, dimension_id, key, label, position, is_custom) VALUES (?, ?, ?, ?, ?, 0)',
+        [newUUID(), dimId, val.key, val.label, valPos++]
+      );
+    }
   }
 }

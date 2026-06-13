@@ -10,9 +10,11 @@ import { useDb } from '@/db/context';
 import { movementsRepo } from '@/repositories/movements';
 import { stylesRepo } from '@/repositories/styles';
 import { mediaRepo } from '@/repositories/media';
+import { attributesRepo, type DimensionWithValues } from '@/repositories/attributes';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { VideoSection } from '@/components/movements/VideoSection';
+import { AttributeSelector } from '@/components/attributes/AttributeSelector';
 import { MOVEMENT_STATUSES } from '@/constants/statuses';
 import { statusKey } from '@/i18n/labels';
 import type { MediaAsset, Movement, MovementStatus, Style } from '@/types';
@@ -35,6 +37,8 @@ export default function MovementDetailScreen() {
   const [thumbnailAsset, setThumbnailAsset] = useState<MediaAsset | null>(null);
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<MovementStatus>('new');
+  const [dimensions, setDimensions] = useState<DimensionWithValues[]>([]);
+  const [selectedValueIds, setSelectedValueIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
   const { control, handleSubmit, reset } = useForm<FormData>({
@@ -45,11 +49,14 @@ export default function MovementDetailScreen() {
     const mRepo = movementsRepo(db);
     const sRepo = stylesRepo(db);
     const mRepoInst = mediaRepo(db);
-    const [m, s, video, thumb] = await Promise.all([
+    const aRepo = attributesRepo(db);
+    const [m, s, video, thumb, dims, valueIds] = await Promise.all([
       mRepo.getById(id),
       sRepo.getAll(),
       mRepoInst.getForMovement(id, 'video'),
       mRepoInst.getForMovement(id, 'thumbnail'),
+      aRepo.getDimensionsWithValues(),
+      aRepo.getMovementValueIds(id),
     ]);
     if (!m) { router.back(); return; }
     setMovement(m as Movement);
@@ -58,8 +65,20 @@ export default function MovementDetailScreen() {
     setThumbnailAsset(thumb as MediaAsset | null);
     setSelectedStyleId(m.styleId ?? null);
     setSelectedStatus(m.status as MovementStatus);
+    setDimensions(dims);
+    setSelectedValueIds(valueIds);
     reset({ name: m.name, notes: m.notes ?? '' });
   }, [id, db, reset]);
+
+  const handleAddValue = useCallback(
+    async (dimensionId: string, label: string) => {
+      const newId = await attributesRepo(db).addValue(dimensionId, label);
+      const dims = await attributesRepo(db).getDimensionsWithValues();
+      setDimensions(dims);
+      setSelectedValueIds((prev) => [...prev, newId]);
+    },
+    [db]
+  );
 
   useEffect(() => { load(); }, [load]);
 
@@ -99,6 +118,7 @@ export default function MovementDetailScreen() {
       if (movement && movement.status !== selectedStatus) {
         await repo.updateStatus(id, selectedStatus);
       }
+      await attributesRepo(db).setMovementValues(id, selectedValueIds);
       router.back();
     } catch {
       Alert.alert(t('common.error'), t('movement.errorSaveChanges'));
@@ -162,6 +182,16 @@ export default function MovementDetailScreen() {
             </Pressable>
           ))}
         </View>
+      </View>
+
+      <View className="gap-2">
+        <Text className="text-sm font-medium text-neutral-400">{t('attributes.title')}</Text>
+        <AttributeSelector
+          dimensions={dimensions}
+          selectedIds={selectedValueIds}
+          onChange={setSelectedValueIds}
+          onAddValue={handleAddValue}
+        />
       </View>
 
       <View className="gap-1">
