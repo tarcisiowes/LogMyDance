@@ -20,7 +20,8 @@ The integration depends on a native FFmpeg binary that this environment cannot c
 
 ## What's implemented
 - `src/services/sequence-concat.ts`:
-  - `concatSequenceToMp4(name, clips)` → builds one FFmpeg concat-filter command (scale+pad each clip to 720×1280, `fps=30`, `aresample`, `concat=n=N:v=1:a=1`), re-encodes with **built-in `mpeg4` + `aac`** (so the **LGPL** build suffices — no GPL x264). Returns the `.mp4` uri.
+  - `concatSequenceToMp4(name, clips, tempoSync?)` → builds one FFmpeg concat-filter command (scale+pad each clip to 720×1280, `fps=30`, `aresample`, `concat=n=N:v=1:a=1`), re-encodes with **built-in `mpeg4` + `aac`** (so the **LGPL** build suffices — no GPL x264). Returns the `.mp4` uri.
+  - **Phase 3 — tempo sync in export (done):** when `tempoSync.enabled`, each clip gets the same rate the live player uses (`clipRate(naturalBpm(times), targetBpm)`) applied as `setpts=PTS/rate` (video) + an `atempo` chain (audio; two stages for rate < 0.5). The exported `.mp4` matches the BPM-synced preview. `sequence/[id]` "Save as one video" passes `{ enabled: syncEnabled, targetBpm }`. Depends on `src/utils/tempo.ts` + step markers (master merged into this branch).
   - The module is loaded via a `string`-typed `require(FFMPEG_PKG)` so the app **builds without the package**; `isConcatAvailable()` reflects presence.
 - `app/sequence/[id].tsx`: "Save as one video" button (shown when ≥2 playable clips) → concat → share sheet. Shows a "merging…" note; if the module is absent, an alert tells the user to rebuild.
 - i18n: `sequences.exportVideo/merging/exportVideoFailed/exportVideoUnavailable` (EN/PT).

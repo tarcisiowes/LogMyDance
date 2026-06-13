@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { stripScheme } from '@/services/backup/types';
+import { naturalBpm, clipRate } from '@/utils/tempo';
 import type { SequenceClipSource } from '@/components/sequence/SequencePlayer';
 
 /**
@@ -52,6 +53,13 @@ function slugify(name: string): string {
 const TARGET_W = 720;
 const TARGET_H = 1280;
 
+// atempo only accepts 0.5–100 per instance; chain two for rates below 0.5
+// (clipRate clamps to >= 0.25, so a single extra stage suffices).
+function atempoChain(rate: number): string {
+  if (rate >= 0.5) return `atempo=${rate.toFixed(4)}`;
+  return `atempo=0.5,atempo=${(rate / 0.5).toFixed(4)}`;
+}
+
 /**
  * Builds and runs a single FFmpeg concat-filter command (re-encode). Uses the
  * built-in mpeg4 + aac encoders so the default LGPL FFmpeg build is enough (no
@@ -62,7 +70,8 @@ const TARGET_H = 1280;
  */
 export async function concatSequenceToMp4(
   name: string,
-  clips: SequenceClipSource[]
+  clips: SequenceClipSource[],
+  tempoSync?: { enabled: boolean; targetBpm: number }
 ): Promise<string> {
   const mod = loadFFmpeg();
   if (!mod) throw new Error('FFmpeg native module not installed');
@@ -76,10 +85,15 @@ export async function concatSequenceToMp4(
 
   let filter = '';
   for (let i = 0; i < n; i += 1) {
+    // Same rate the live player uses, so the export matches the preview.
+    const rate = tempoSync?.enabled
+      ? clipRate(naturalBpm(clips[i].times ?? []), tempoSync.targetBpm)
+      : 1;
     filter +=
       `[${i}:v]scale=${TARGET_W}:${TARGET_H}:force_original_aspect_ratio=decrease,` +
-      `pad=${TARGET_W}:${TARGET_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v${i}];` +
-      `[${i}:a]aresample=async=1:first_pts=0[a${i}];`;
+      `pad=${TARGET_W}:${TARGET_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,` +
+      `setpts=PTS/${rate.toFixed(4)},fps=30[v${i}];` +
+      `[${i}:a]aresample=async=1,${atempoChain(rate)}[a${i}];`;
   }
   for (let i = 0; i < n; i += 1) filter += `[v${i}][a${i}]`;
   filter += `concat=n=${n}:v=1:a=1[v][a]`;

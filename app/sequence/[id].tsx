@@ -103,7 +103,10 @@ export default function SequenceDetailScreen() {
     }
     try {
       setMerging(true);
-      const out = await concatSequenceToMp4(sequence.name, playable);
+      const out = await concatSequenceToMp4(sequence.name, playable, {
+        enabled: syncEnabled,
+        targetBpm,
+      });
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(out, {
           mimeType: 'video/mp4',
