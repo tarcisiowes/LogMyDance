@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/Card';
 import { TagChip } from '@/components/ui/TagChip';
 import { getMoodEmoji } from '@/constants/moods';
@@ -13,6 +14,7 @@ interface EntryCardProps {
 }
 
 export function EntryCard({ entry, style, tags = [], onPress }: EntryCardProps) {
+  const { t } = useTranslation();
   return (
     <Card onPress={onPress} className="gap-2">
       <View className="flex-row items-start justify-between">
@@ -25,7 +27,7 @@ export function EntryCard({ entry, style, tags = [], onPress }: EntryCardProps) 
               {style.icon} {style.name}
             </Text>
           ) : (
-            <Text className="text-neutral-100 text-base font-semibold">Dance Class</Text>
+            <Text className="text-neutral-100 text-base font-semibold">{t('entry.defaultTitle')}</Text>
           )}
         </View>
         {entry.mood ? (
@@ -45,7 +47,7 @@ export function EntryCard({ entry, style, tags = [], onPress }: EntryCardProps) 
       ) : null}
 
       {entry.durationMin ? (
-        <Text className="text-neutral-500 text-xs">⏱ {entry.durationMin} min</Text>
+        <Text className="text-neutral-500 text-xs">⏱ {entry.durationMin} {t('common.minShort')}</Text>
       ) : null}
 
       {tags.length > 0 ? (

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { Plus } from 'lucide-react-native';
 import { useDb } from '@/db/context';
@@ -19,6 +20,7 @@ type MovementWithMeta = {
 
 export default function MovementsScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [items, setItems] = useState<MovementWithMeta[]>([]);
 
   const load = useCallback(async () => {
@@ -72,8 +74,8 @@ export default function MovementsScreen() {
         ListEmptyComponent={
           <EmptyState
             emoji="💪"
-            title="No movements yet"
-            subtitle="Tap + to add a movement to your library"
+            title={t('movement.emptyTitle')}
+            subtitle={t('movement.emptySubtitle')}
           />
         }
       />

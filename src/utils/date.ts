@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 export function now(): string {
   return new Date().toISOString();
 }
@@ -7,7 +9,7 @@ export function todayDate(): string {
 }
 
 export function formatDate(isoDate: string): string {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(i18n.language || 'en', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -20,8 +22,8 @@ export function formatRelativeDate(isoDate: string): string {
   const diffDays = Math.floor(
     (today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
   );
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays === 0) return i18n.t('date.today');
+  if (diffDays === 1) return i18n.t('date.yesterday');
+  if (diffDays < 7) return i18n.t('date.daysAgo', { count: diffDays });
   return formatDate(isoDate);
 }

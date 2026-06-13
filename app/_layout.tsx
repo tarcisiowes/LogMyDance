@@ -44,35 +44,35 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
               name="entry/new"
-              options={{ title: 'New Entry', presentation: 'modal' }}
+              options={{ title: t('nav.newEntry'), presentation: 'modal' }}
             />
             <Stack.Screen
               name="entry/[id]"
-              options={{ title: 'Entry', presentation: 'card' }}
+              options={{ title: t('nav.entry'), presentation: 'card' }}
             />
             <Stack.Screen
               name="movement/new"
-              options={{ title: 'New Movement', presentation: 'modal' }}
+              options={{ title: t('nav.newMovement'), presentation: 'modal' }}
             />
             <Stack.Screen
               name="movement/[id]"
-              options={{ title: 'Movement', presentation: 'card' }}
+              options={{ title: t('nav.movement'), presentation: 'card' }}
             />
             <Stack.Screen
               name="template/new"
-              options={{ title: 'New Template', presentation: 'modal' }}
+              options={{ title: t('nav.newTemplate'), presentation: 'modal' }}
             />
             <Stack.Screen
               name="template/[id]"
-              options={{ title: 'Template', presentation: 'card' }}
+              options={{ title: t('nav.template'), presentation: 'card' }}
             />
             <Stack.Screen
               name="tags"
-              options={{ title: 'Manage Tags', presentation: 'modal' }}
+              options={{ title: t('nav.manageTags'), presentation: 'modal' }}
             />
             <Stack.Screen
               name="storage"
-              options={{ title: 'Storage & Backup', presentation: 'card' }}
+              options={{ title: t('nav.storageBackup'), presentation: 'card' }}
             />
             <Stack.Screen
               name="settings"

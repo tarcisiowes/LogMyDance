@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Check, Plus } from 'lucide-react-native';
 import type { Movement } from '@/types';
 
@@ -16,6 +17,7 @@ export function MovementPicker({
   onToggle,
   onCreate,
 }: MovementPickerProps) {
+  const { t } = useTranslation();
   const [newName, setNewName] = useState('');
 
   const handleAdd = () => {
@@ -49,7 +51,7 @@ export function MovementPicker({
         </View>
       ) : (
         <Text className="text-neutral-500 text-xs">
-          No movements yet. Add one below.
+          {t('picker.empty')}
         </Text>
       )}
 
@@ -57,7 +59,7 @@ export function MovementPicker({
         <TextInput
           value={newName}
           onChangeText={setNewName}
-          placeholder="New movement name…"
+          placeholder={t('picker.newNamePlaceholder')}
           placeholderTextColor="#737373"
           className="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-neutral-100"
           onSubmitEditing={handleAdd}

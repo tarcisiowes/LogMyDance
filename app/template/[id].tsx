@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,6 +28,7 @@ export default function TemplateDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const db = useDb();
+  const { t } = useTranslation();
   const [template, setTemplate] = useState<ClassTemplate | null>(null);
   const [styles, setStyles] = useState<Style[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -75,10 +77,10 @@ export default function TemplateDetailScreen() {
   }, [navigation, template]);
 
   const handleDelete = () => {
-    Alert.alert('Delete Template', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('template.deleteTitle'), t('template.deleteBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           await templatesRepo(db).delete(id);
@@ -101,7 +103,7 @@ export default function TemplateDetailScreen() {
       });
       router.back();
     } catch {
-      Alert.alert('Error', 'Could not save changes.');
+      Alert.alert(t('common.error'), t('template.errorSaveChanges'));
     } finally {
       setSaving(false);
     }
@@ -119,12 +121,12 @@ export default function TemplateDetailScreen() {
         control={control}
         name="name"
         render={({ field: { onChange, value } }) => (
-          <Input label="Template name" value={value} onChangeText={onChange} />
+          <Input label={t('template.nameLabel')} value={value} onChangeText={onChange} />
         )}
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Style</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.style')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2 py-1">
             {styles.map((s) => (
@@ -148,14 +150,14 @@ export default function TemplateDetailScreen() {
         control={control}
         name="instructor"
         render={({ field: { onChange, value } }) => (
-          <Input label="Instructor" placeholder="Name" value={value} onChangeText={onChange} />
+          <Input label={t('forms.instructor')} placeholder={t('forms.namePlaceholder')} value={value} onChangeText={onChange} />
         )}
       />
       <Controller
         control={control}
         name="location"
         render={({ field: { onChange, value } }) => (
-          <Input label="Location" placeholder="Studio, city…" value={value} onChangeText={onChange} />
+          <Input label={t('forms.location')} placeholder={t('forms.locationPlaceholder')} value={value} onChangeText={onChange} />
         )}
       />
       <Controller
@@ -163,8 +165,8 @@ export default function TemplateDetailScreen() {
         name="defaultDuration"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Default duration (minutes)"
-            placeholder="60"
+            label={t('template.defaultDuration')}
+            placeholder={t('forms.durationPlaceholder')}
             value={value}
             onChangeText={onChange}
             keyboardType="number-pad"
@@ -174,7 +176,7 @@ export default function TemplateDetailScreen() {
 
       {tags.length > 0 ? (
         <View className="gap-1">
-          <Text className="text-sm font-medium text-neutral-400">Default tags</Text>
+          <Text className="text-sm font-medium text-neutral-400">{t('forms.defaultTags')}</Text>
           <View className="flex-row flex-wrap gap-2">
             {tags.map((tag) => (
               <TagChip
@@ -193,7 +195,7 @@ export default function TemplateDetailScreen() {
         </View>
       ) : null}
 
-      <Button label="Save Changes" onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
+      <Button label={t('common.saveChanges')} onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
     </ScrollView>
   );
 }

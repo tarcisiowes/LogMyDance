@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { Plus } from 'lucide-react-native';
 import { useDb } from '@/db/context';
@@ -19,6 +20,7 @@ type TemplateWithMeta = {
 
 export default function TemplatesScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [items, setItems] = useState<TemplateWithMeta[]>([]);
 
   const load = useCallback(async () => {
@@ -78,8 +80,8 @@ export default function TemplatesScreen() {
         ListEmptyComponent={
           <EmptyState
             emoji="📋"
-            title="No templates yet"
-            subtitle="Create a template to quickly log recurring classes"
+            title={t('template.emptyTitle')}
+            subtitle={t('template.emptySubtitle')}
           />
         }
       />

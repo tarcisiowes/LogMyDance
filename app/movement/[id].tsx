@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { VideoSection } from '@/components/movements/VideoSection';
 import { MOVEMENT_STATUSES } from '@/constants/statuses';
+import { statusKey } from '@/i18n/labels';
 import type { MediaAsset, Movement, MovementStatus, Style } from '@/types';
 
 const schema = z.object({
@@ -26,6 +28,7 @@ export default function MovementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const db = useDb();
+  const { t } = useTranslation();
   const [movement, setMovement] = useState<Movement | null>(null);
   const [styles, setStyles] = useState<Style[]>([]);
   const [videoAsset, setVideoAsset] = useState<MediaAsset | null>(null);
@@ -71,10 +74,10 @@ export default function MovementDetailScreen() {
   }, [navigation, movement]);
 
   const handleDelete = () => {
-    Alert.alert('Delete Movement', 'This will also remove it from all entries.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('movement.deleteTitle'), t('movement.deleteBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           await movementsRepo(db).delete(id);
@@ -98,7 +101,7 @@ export default function MovementDetailScreen() {
       }
       router.back();
     } catch {
-      Alert.alert('Error', 'Could not save changes.');
+      Alert.alert(t('common.error'), t('movement.errorSaveChanges'));
     } finally {
       setSaving(false);
     }
@@ -116,12 +119,12 @@ export default function MovementDetailScreen() {
         control={control}
         name="name"
         render={({ field: { onChange, value } }) => (
-          <Input label="Movement name" value={value} onChangeText={onChange} />
+          <Input label={t('movement.nameLabel')} value={value} onChangeText={onChange} />
         )}
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Style</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.style')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2 py-1">
             {styles.map((s) => (
@@ -142,7 +145,7 @@ export default function MovementDetailScreen() {
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Status</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.status')}</Text>
         <View className="gap-2">
           {MOVEMENT_STATUSES.map((s) => (
             <Pressable
@@ -155,14 +158,14 @@ export default function MovementDetailScreen() {
               className="px-4 py-3 rounded-xl border flex-row items-center gap-3"
             >
               <View style={{ backgroundColor: s.color }} className="w-2.5 h-2.5 rounded-full" />
-              <Text style={{ color: s.color }} className="text-sm font-medium">{s.label}</Text>
+              <Text style={{ color: s.color }} className="text-sm font-medium">{t(statusKey(s.value))}</Text>
             </Pressable>
           ))}
         </View>
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Video</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.video')}</Text>
         <VideoSection
           movementId={id}
           videoAsset={videoAsset}
@@ -176,8 +179,8 @@ export default function MovementDetailScreen() {
         name="notes"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Notes"
-            placeholder="Tips, corrections, reminders…"
+            label={t('forms.notes')}
+            placeholder={t('movement.notesPlaceholder')}
             value={value}
             onChangeText={onChange}
             multiline
@@ -188,7 +191,7 @@ export default function MovementDetailScreen() {
         )}
       />
 
-      <Button label="Save Changes" onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
+      <Button label={t('common.saveChanges')} onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
     </ScrollView>
   );
 }

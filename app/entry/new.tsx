@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ import { Input } from '@/components/ui/Input';
 import { TagChip } from '@/components/ui/TagChip';
 import { MovementPicker } from '@/components/movements/MovementPicker';
 import { MOODS } from '@/constants/moods';
+import { moodKey } from '@/i18n/labels';
 import { todayDate } from '@/utils/date';
 import type { ClassTemplate, Mood, Movement, Style, Tag } from '@/types';
 
@@ -31,6 +33,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewEntryScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [styles, setStyles] = useState<Style[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [movements, setMovements] = useState<Movement[]>([]);
@@ -131,7 +134,7 @@ export default function NewEntryScreen() {
       });
       router.back();
     } catch (e) {
-      Alert.alert('Error', 'Could not save entry. Please try again.');
+      Alert.alert(t('common.error'), t('entry.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -146,7 +149,7 @@ export default function NewEntryScreen() {
       {templates.length > 0 ? (
         <View className="gap-1">
           <Text className="text-sm font-medium text-neutral-400">
-            Start from template
+            {t('entry.startFromTemplate')}
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="flex-row gap-2 py-1">
@@ -173,17 +176,17 @@ export default function NewEntryScreen() {
         name="date"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Date"
-            placeholder="YYYY-MM-DD"
+            label={t('forms.date')}
+            placeholder={t('forms.datePlaceholder')}
             value={value}
             onChangeText={onChange}
-            error={errors.date?.message}
+            error={errors.date ? t('forms.dateRequired') : undefined}
           />
         )}
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Style</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.style')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2 py-1">
             {styles.map((s) => (
@@ -206,7 +209,7 @@ export default function NewEntryScreen() {
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Mood</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.mood')}</Text>
         <Controller
           control={control}
           name="mood"
@@ -223,7 +226,7 @@ export default function NewEntryScreen() {
                   }`}
                 >
                   <Text className="text-xl">{m.emoji}</Text>
-                  <Text className="text-neutral-400 text-xs mt-0.5">{m.label}</Text>
+                  <Text className="text-neutral-400 text-xs mt-0.5">{t(moodKey(m.value))}</Text>
                 </Pressable>
               ))}
             </View>
@@ -236,8 +239,8 @@ export default function NewEntryScreen() {
         name="instructor"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Instructor"
-            placeholder="Name"
+            label={t('forms.instructor')}
+            placeholder={t('forms.namePlaceholder')}
             value={value}
             onChangeText={onChange}
           />
@@ -249,8 +252,8 @@ export default function NewEntryScreen() {
         name="location"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Location"
-            placeholder="Studio, city…"
+            label={t('forms.location')}
+            placeholder={t('forms.locationPlaceholder')}
             value={value}
             onChangeText={onChange}
           />
@@ -262,8 +265,8 @@ export default function NewEntryScreen() {
         name="durationMin"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Duration (minutes)"
-            placeholder="60"
+            label={t('forms.durationMin')}
+            placeholder={t('forms.durationPlaceholder')}
             value={value}
             onChangeText={onChange}
             keyboardType="number-pad"
@@ -272,7 +275,7 @@ export default function NewEntryScreen() {
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Movements</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.movements')}</Text>
         <MovementPicker
           movements={movements}
           selectedIds={selectedMovementIds}
@@ -283,7 +286,7 @@ export default function NewEntryScreen() {
 
       {tags.length > 0 ? (
         <View className="gap-1">
-          <Text className="text-sm font-medium text-neutral-400">Tags</Text>
+          <Text className="text-sm font-medium text-neutral-400">{t('forms.tags')}</Text>
           <View className="flex-row flex-wrap gap-2">
             {tags.map((tag) => (
               <TagChip
@@ -303,8 +306,8 @@ export default function NewEntryScreen() {
         name="notes"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Notes"
-            placeholder="What did you work on? What felt good?"
+            label={t('forms.notes')}
+            placeholder={t('entry.notesPlaceholder')}
             value={value}
             onChangeText={onChange}
             multiline
@@ -316,7 +319,7 @@ export default function NewEntryScreen() {
       />
 
       <Button
-        label="Save Entry"
+        label={t('entry.save')}
         onPress={handleSubmit(onSubmit)}
         loading={saving}
         className="mt-4"

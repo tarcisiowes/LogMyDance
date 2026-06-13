@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,6 +11,7 @@ import { stylesRepo } from '@/repositories/styles';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { MOVEMENT_STATUSES } from '@/constants/statuses';
+import { statusKey } from '@/i18n/labels';
 import type { Style } from '@/types';
 
 const schema = z.object({
@@ -21,6 +23,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewMovementScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [styles, setStyles] = useState<Style[]>([]);
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState('new');
@@ -45,7 +48,7 @@ export default function NewMovementScreen() {
       });
       router.back();
     } catch {
-      Alert.alert('Error', 'Could not save movement.');
+      Alert.alert(t('common.error'), t('movement.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -62,17 +65,17 @@ export default function NewMovementScreen() {
         name="name"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Movement name"
-            placeholder="e.g. Body wave, Cambrés, Ocho"
+            label={t('movement.nameLabel')}
+            placeholder={t('movement.namePlaceholder')}
             value={value}
             onChangeText={onChange}
-            error={errors.name?.message}
+            error={errors.name ? t('forms.nameRequired') : undefined}
           />
         )}
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Style</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.style')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2 py-1">
             {styles.map((s) => (
@@ -95,7 +98,7 @@ export default function NewMovementScreen() {
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Status</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.status')}</Text>
         <View className="gap-2">
           {MOVEMENT_STATUSES.map((s) => (
             <Pressable
@@ -114,7 +117,7 @@ export default function NewMovementScreen() {
                 className="w-2.5 h-2.5 rounded-full"
               />
               <Text style={{ color: s.color }} className="text-sm font-medium">
-                {s.label}
+                {t(statusKey(s.value))}
               </Text>
             </Pressable>
           ))}
@@ -126,8 +129,8 @@ export default function NewMovementScreen() {
         name="notes"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Notes"
-            placeholder="Tips, corrections, reminders…"
+            label={t('forms.notes')}
+            placeholder={t('movement.notesPlaceholder')}
             value={value}
             onChangeText={onChange}
             multiline
@@ -138,7 +141,7 @@ export default function NewMovementScreen() {
         )}
       />
 
-      <Button label="Save Movement" onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
+      <Button label={t('movement.save')} onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
     </ScrollView>
   );
 }

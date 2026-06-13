@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
 import { VideoView, createVideoPlayer, useVideoPlayer } from 'expo-video';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,6 +26,7 @@ export function VideoSection({
   onMediaChanged,
 }: VideoSectionProps) {
   const db = useDb();
+  const { t } = useTranslation();
   const [importing, setImporting] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -46,7 +48,7 @@ export function VideoSection({
   const handleImport = useCallback(async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission required', 'Allow access to your photo library to import videos.');
+      Alert.alert(t('video.permissionTitle'), t('video.permissionBody'));
       return;
     }
 
@@ -92,17 +94,17 @@ export function VideoSection({
 
       onMediaChanged();
     } catch (e) {
-      Alert.alert('Import failed', 'Could not import the video. Please try again.');
+      Alert.alert(t('video.importFailedTitle'), t('video.importFailedBody'));
     } finally {
       setImporting(false);
     }
-  }, [movementId, videoAsset, db, onMediaChanged]);
+  }, [movementId, videoAsset, db, onMediaChanged, t]);
 
   const handleDelete = useCallback(() => {
-    Alert.alert('Remove video', 'Delete the video and thumbnail for this movement?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('video.removeTitle'), t('video.removeBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           await mediaRepo(db).deleteForMovement(movementId);
@@ -111,13 +113,13 @@ export function VideoSection({
         },
       },
     ]);
-  }, [movementId, db, onMediaChanged]);
+  }, [movementId, db, onMediaChanged, t]);
 
   if (importing) {
     return (
       <View className="items-center py-8 gap-2">
         <ActivityIndicator color="#a855f7" size="large" />
-        <Text className="text-neutral-400 text-sm">Importing video…</Text>
+        <Text className="text-neutral-400 text-sm">{t('video.importing')}</Text>
       </View>
     );
   }
@@ -129,7 +131,7 @@ export function VideoSection({
         className="border-2 border-dashed border-neutral-700 rounded-2xl p-6 items-center gap-3 active:border-violet-500"
       >
         <Video color="#737373" size={32} />
-        <Text className="text-neutral-400 text-sm">Tap to import a video</Text>
+        <Text className="text-neutral-400 text-sm">{t('video.tapToImport')}</Text>
       </Pressable>
     );
   }
@@ -187,13 +189,13 @@ export function VideoSection({
 
       <View className="flex-row items-center justify-between">
         <Text className="text-neutral-500 text-xs">
-          {videoAsset.originalFilename ?? 'Imported video'}
+          {videoAsset.originalFilename ?? t('video.importedVideo')}
           {videoAsset.durationMs
             ? ` · ${Math.round(videoAsset.durationMs / 1000)}s`
             : ''}
         </Text>
         <Pressable onPress={handleImport} className="p-1">
-          <Text className="text-violet-400 text-xs">Replace</Text>
+          <Text className="text-violet-400 text-xs">{t('video.replace')}</Text>
         </Pressable>
       </View>
     </View>

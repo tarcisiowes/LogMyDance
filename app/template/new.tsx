@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,6 +25,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewTemplateScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [styles, setStyles] = useState<Style[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
@@ -56,7 +58,7 @@ export default function NewTemplateScreen() {
       });
       router.back();
     } catch {
-      Alert.alert('Error', 'Could not save template.');
+      Alert.alert(t('common.error'), t('template.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -73,17 +75,17 @@ export default function NewTemplateScreen() {
         name="name"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Template name"
-            placeholder='e.g. "Bachata Monday @ Studio X"'
+            label={t('template.nameLabel')}
+            placeholder={t('template.namePlaceholder')}
             value={value}
             onChangeText={onChange}
-            error={errors.name?.message}
+            error={errors.name ? t('forms.nameRequired') : undefined}
           />
         )}
       />
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-neutral-400">Style</Text>
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.style')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2 py-1">
             {styles.map((s) => (
@@ -107,7 +109,7 @@ export default function NewTemplateScreen() {
         control={control}
         name="instructor"
         render={({ field: { onChange, value } }) => (
-          <Input label="Instructor" placeholder="Name" value={value} onChangeText={onChange} />
+          <Input label={t('forms.instructor')} placeholder={t('forms.namePlaceholder')} value={value} onChangeText={onChange} />
         )}
       />
 
@@ -115,7 +117,7 @@ export default function NewTemplateScreen() {
         control={control}
         name="location"
         render={({ field: { onChange, value } }) => (
-          <Input label="Location" placeholder="Studio, city…" value={value} onChangeText={onChange} />
+          <Input label={t('forms.location')} placeholder={t('forms.locationPlaceholder')} value={value} onChangeText={onChange} />
         )}
       />
 
@@ -124,8 +126,8 @@ export default function NewTemplateScreen() {
         name="defaultDuration"
         render={({ field: { onChange, value } }) => (
           <Input
-            label="Default duration (minutes)"
-            placeholder="60"
+            label={t('template.defaultDuration')}
+            placeholder={t('forms.durationPlaceholder')}
             value={value}
             onChangeText={onChange}
             keyboardType="number-pad"
@@ -135,7 +137,7 @@ export default function NewTemplateScreen() {
 
       {tags.length > 0 ? (
         <View className="gap-1">
-          <Text className="text-sm font-medium text-neutral-400">Default tags</Text>
+          <Text className="text-sm font-medium text-neutral-400">{t('forms.defaultTags')}</Text>
           <View className="flex-row flex-wrap gap-2">
             {tags.map((tag) => (
               <TagChip
@@ -154,7 +156,7 @@ export default function NewTemplateScreen() {
         </View>
       ) : null}
 
-      <Button label="Save Template" onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
+      <Button label={t('template.save')} onPress={handleSubmit(onSubmit)} loading={saving} className="mt-4" />
     </ScrollView>
   );
 }

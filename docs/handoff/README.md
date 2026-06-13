@@ -19,3 +19,4 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Sprint 4 — i18n infrastructure (EN + PT-BR) | [09](2026-06-13-09-i18n-infra.md) |
 | 2026-06-13 | Sprint 4 — Onboarding flow | [10](2026-06-13-10-onboarding.md) |
 | 2026-06-13 | Sprint 4 — Rich Stats screen | [11](2026-06-13-11-rich-stats.md) |
+| 2026-06-13 | Sprint 4 — Deep-screen i18n (full EN/PT-BR) | [12](2026-06-13-12-deep-screen-i18n.md) |

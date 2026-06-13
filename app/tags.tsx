@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { tagsRepo } from '@/repositories/tags';
@@ -15,6 +16,7 @@ const TAG_COLORS = [
 
 export default function TagsScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(TAG_COLORS[5]);
@@ -40,10 +42,10 @@ export default function TagsScreen() {
   };
 
   const handleDelete = (tag: Tag) => {
-    Alert.alert('Delete Tag', `Remove "${tag.name}" from all entries?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('tags.deleteTitle'), t('tags.deleteBody', { name: tag.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           await tagsRepo(db).delete(tag.id);
@@ -58,7 +60,7 @@ export default function TagsScreen() {
       <View className="p-4 border-b border-neutral-800 gap-3">
         <TextInput
           className="bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-neutral-100 text-base"
-          placeholder="New tag name…"
+          placeholder={t('tags.newNamePlaceholder')}
           placeholderTextColor="#737373"
           value={newName}
           onChangeText={setNewName}
@@ -84,7 +86,7 @@ export default function TagsScreen() {
             className="bg-violet-600 px-4 py-2.5 rounded-xl flex-row items-center gap-1.5 disabled:opacity-50"
           >
             <Plus color="#fff" size={16} />
-            <Text className="text-white font-semibold text-sm">Add</Text>
+            <Text className="text-white font-semibold text-sm">{t('common.add')}</Text>
           </Pressable>
         </View>
       </View>
@@ -106,7 +108,7 @@ export default function TagsScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState emoji="🏷️" title="No tags yet" subtitle="Add tags to organise your entries" />
+          <EmptyState emoji="🏷️" title={t('tags.emptyTitle')} subtitle={t('tags.emptySubtitle')} />
         }
       />
     </View>

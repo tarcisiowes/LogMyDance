@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { Plus } from 'lucide-react-native';
 import { useDb } from '@/db/context';
@@ -19,6 +20,7 @@ type EntryWithMeta = {
 
 export default function JournalScreen() {
   const db = useDb();
+  const { t } = useTranslation();
   const [items, setItems] = useState<EntryWithMeta[]>([]);
 
   const load = useCallback(async () => {
@@ -79,8 +81,8 @@ export default function JournalScreen() {
         ListEmptyComponent={
           <EmptyState
             emoji="📖"
-            title="No entries yet"
-            subtitle="Tap + to log your first dance class"
+            title={t('entry.emptyTitle')}
+            subtitle={t('entry.emptySubtitle')}
           />
         }
       />
