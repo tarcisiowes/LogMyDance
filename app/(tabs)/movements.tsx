@@ -8,6 +8,7 @@ import { useDb } from '@/db/context';
 import { movementsRepo } from '@/repositories/movements';
 import { stylesRepo } from '@/repositories/styles';
 import { mediaRepo } from '@/repositories/media';
+import { sequencesRepo } from '@/repositories/sequences';
 import { MovementCard } from '@/components/movements/MovementCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import type { MediaAsset, Movement, Style } from '@/types';
@@ -16,6 +17,7 @@ type MovementWithMeta = {
   movement: Movement;
   style: Style | null;
   thumbnail: MediaAsset | null;
+  stepCount: number;
 };
 
 export default function MovementsScreen() {
@@ -30,12 +32,14 @@ export default function MovementsScreen() {
     const movements = await mRepo.getAll();
     const styles = await sRepo.getAll();
     const styleMap = new Map(styles.map((s) => [s.id, s]));
+    const stepsMap = await sequencesRepo(db).getStepsForMovements(movements.map((m) => m.id));
 
     const enriched = await Promise.all(
       movements.map(async (m) => ({
         movement: m as Movement,
         style: m.styleId ? (styleMap.get(m.styleId) as Style) ?? null : null,
         thumbnail: (await mMediaRepo.getForMovement(m.id, 'thumbnail')) as MediaAsset | null,
+        stepCount: stepsMap.get(m.id)?.length ?? 0,
       }))
     );
 
@@ -68,6 +72,7 @@ export default function MovementsScreen() {
             movement={item.movement}
             style={item.style}
             thumbnail={item.thumbnail}
+            stepCount={item.stepCount}
             onPress={() => router.push(`/movement/${item.movement.id}`)}
           />
         )}

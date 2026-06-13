@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import { Image } from 'expo-image';
+import { Footprints } from 'lucide-react-native';
 import { Card } from '@/components/ui/Card';
 import { StatusBadge } from './StatusBadge';
 import type { MediaAsset, Movement, Style } from '@/types';
@@ -8,10 +9,11 @@ interface MovementCardProps {
   movement: Movement;
   style?: Style | null;
   thumbnail?: MediaAsset | null;
+  stepCount?: number;
   onPress?: () => void;
 }
 
-export function MovementCard({ movement, style, thumbnail, onPress }: MovementCardProps) {
+export function MovementCard({ movement, style, thumbnail, stepCount = 0, onPress }: MovementCardProps) {
   return (
     <Card onPress={onPress} className="flex-row gap-3 p-0 overflow-hidden">
       {thumbnail ? (
@@ -32,11 +34,19 @@ export function MovementCard({ movement, style, thumbnail, onPress }: MovementCa
           </Text>
           <StatusBadge status={movement.status as any} />
         </View>
-        {style ? (
-          <Text className="text-neutral-500 text-xs">
-            {style.icon} {style.name}
-          </Text>
-        ) : null}
+        <View className="flex-row items-center gap-2">
+          {style ? (
+            <Text className="text-neutral-500 text-xs">
+              {style.icon} {style.name}
+            </Text>
+          ) : null}
+          {stepCount > 0 ? (
+            <View className="flex-row items-center gap-1">
+              <Footprints color="#fbbf24" size={12} />
+              <Text className="text-amber-400 text-xs">{stepCount}</Text>
+            </View>
+          ) : null}
+        </View>
         {movement.notes ? (
           <Text className="text-neutral-400 text-xs" numberOfLines={1}>
             {movement.notes}
