@@ -1,4 +1,4 @@
-package com.logmydance
+package com.logmydance.app
 
 import android.os.Build
 import android.os.Bundle
