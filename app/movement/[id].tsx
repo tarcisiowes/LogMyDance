@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -202,6 +202,15 @@ export default function MovementDetailScreen() {
           thumbnailAsset={thumbnailAsset}
           onMediaChanged={load}
         />
+        {videoAsset ? (
+          <Button
+            label={t('steps.title')}
+            variant="secondary"
+            size="sm"
+            onPress={() => router.push(`/steps/${id}` as Href)}
+            className="mt-2"
+          />
+        ) : null}
       </View>
 
       <Controller

@@ -29,6 +29,7 @@ export const ptBR: TranslationSchema = {
     storageBackup: 'Armazenamento e backup',
     privacy: 'Política de privacidade',
     categories: 'Categorias',
+    markSteps: 'Marcar pisadas',
   },
   tabs: {
     journal: 'Diário',
@@ -295,5 +296,17 @@ export const ptBR: TranslationSchema = {
     movementsCount: '{{count}} movimentos',
     saved: 'Sequência salva',
     errorSave: 'Não foi possível salvar a sequência.',
+    sync: 'Sincronizar BPM',
+    bpm: 'BPM',
+    noMarkers: 'Marque pisadas nos movimentos para sincronizar o andamento.',
+  },
+  steps: {
+    title: 'Marcar pisadas',
+    markStep: 'Marcar pisada',
+    clear: 'Limpar',
+    save: 'Salvar pisadas',
+    count: '{{count}} pisadas',
+    emptyHint: 'Pause e toque "Marcar pisada" em cada batida.',
+    noVideo: 'Este movimento não tem vídeo para marcar.',
   },
 };

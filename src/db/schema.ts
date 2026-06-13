@@ -153,3 +153,12 @@ export const sequenceItems = sqliteTable('sequence_items', {
     .references(() => movements.id, { onDelete: 'cascade' }),
   position: integer('position').notNull(),
 });
+
+export const movementSteps = sqliteTable('movement_steps', {
+  id: text('id').primaryKey(),
+  movementId: text('movement_id')
+    .notNull()
+    .references(() => movements.id, { onDelete: 'cascade' }),
+  idx: integer('idx').notNull(),
+  timeMs: integer('time_ms').notNull(),
+});

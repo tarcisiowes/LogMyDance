@@ -27,6 +27,7 @@ export const en = {
     storageBackup: 'Storage & Backup',
     privacy: 'Privacy policy',
     categories: 'Categories',
+    markSteps: 'Mark steps',
   },
   tabs: {
     journal: 'Journal',
@@ -293,6 +294,18 @@ export const en = {
     movementsCount: '{{count}} movements',
     saved: 'Sequence saved',
     errorSave: 'Could not save the sequence.',
+    sync: 'Sync to BPM',
+    bpm: 'BPM',
+    noMarkers: 'Mark steps on movements to sync their tempo.',
+  },
+  steps: {
+    title: 'Mark steps',
+    markStep: 'Mark step',
+    clear: 'Clear',
+    save: 'Save steps',
+    count: '{{count}} steps',
+    emptyHint: 'Pause and tap “Mark step” on each beat.',
+    noVideo: 'This movement has no video to mark.',
   },
 };
 
