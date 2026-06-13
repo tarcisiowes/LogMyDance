@@ -98,6 +98,10 @@ export default function RootLayout() {
               name="sequence/[id]"
               options={{ title: t('sequences.title'), presentation: 'card' }}
             />
+            <Stack.Screen
+              name="steps/[id]"
+              options={{ title: t('nav.markSteps'), presentation: 'card' }}
+            />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           </Stack>
         </DbProvider>

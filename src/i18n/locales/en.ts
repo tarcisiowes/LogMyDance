@@ -27,6 +27,7 @@ export const en = {
     storageBackup: 'Storage & Backup',
     privacy: 'Privacy policy',
     categories: 'Categories',
+    markSteps: 'Mark steps',
   },
   tabs: {
     journal: 'Journal',
@@ -297,6 +298,18 @@ export const en = {
     merging: 'Merging clips… this can take a while.',
     exportVideoFailed: 'Could not create the video. Make sure every clip has audio, then try again.',
     exportVideoUnavailable: 'Video merge needs a native rebuild. Install the FFmpeg module and rebuild the app.',
+    sync: 'Sync to BPM',
+    bpm: 'BPM',
+    noMarkers: 'Mark steps on movements to sync their tempo.',
+  },
+  steps: {
+    title: 'Mark steps',
+    markStep: 'Mark step',
+    clear: 'Clear',
+    save: 'Save steps',
+    count: '{{count}} steps',
+    emptyHint: 'Pause and tap “Mark step” on each beat.',
+    noVideo: 'This movement has no video to mark.',
   },
 };
 

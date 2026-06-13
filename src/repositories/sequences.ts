@@ -67,6 +67,24 @@ export function sequencesRepo(db: DB) {
       );
     },
 
+    /** Step marker times (ms) per movement, for tempo/BPM sync. */
+    async getStepsForMovements(ids: string[]): Promise<Map<string, number[]>> {
+      const result = new Map<string, number[]>();
+      if (ids.length === 0) return result;
+      const placeholders = ids.map(() => '?').join(',');
+      const rows = await client.getAllAsync<{ movementId: string; timeMs: number }>(
+        `SELECT movement_id as movementId, time_ms as timeMs FROM movement_steps
+         WHERE movement_id IN (${placeholders}) ORDER BY movement_id, idx`,
+        ids
+      );
+      for (const r of rows) {
+        const list = result.get(r.movementId) ?? [];
+        list.push(r.timeMs);
+        result.set(r.movementId, list);
+      }
+      return result;
+    },
+
     /** Media for an arbitrary set of movements (used by the builder preview). */
     async getMovementsMedia(ids: string[]): Promise<Map<string, MovementMedia>> {
       const result = new Map<string, MovementMedia>();

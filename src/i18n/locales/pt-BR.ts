@@ -29,6 +29,7 @@ export const ptBR: TranslationSchema = {
     storageBackup: 'Armazenamento e backup',
     privacy: 'Política de privacidade',
     categories: 'Categorias',
+    markSteps: 'Marcar pisadas',
   },
   tabs: {
     journal: 'Diário',
@@ -299,5 +300,17 @@ export const ptBR: TranslationSchema = {
     merging: 'Juntando clipes… pode demorar um pouco.',
     exportVideoFailed: 'Não foi possível criar o vídeo. Verifique se todos os clipes têm áudio e tente de novo.',
     exportVideoUnavailable: 'Juntar vídeo precisa de rebuild nativo. Instale o módulo FFmpeg e recompile o app.',
+    sync: 'Sincronizar BPM',
+    bpm: 'BPM',
+    noMarkers: 'Marque pisadas nos movimentos para sincronizar o andamento.',
+  },
+  steps: {
+    title: 'Marcar pisadas',
+    markStep: 'Marcar pisada',
+    clear: 'Limpar',
+    save: 'Salvar pisadas',
+    count: '{{count}} pisadas',
+    emptyHint: 'Pause e toque "Marcar pisada" em cada batida.',
+    noVideo: 'Este movimento não tem vídeo para marcar.',
   },
 };

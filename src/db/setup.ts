@@ -3,7 +3,7 @@ import { DEFAULT_DANCE_STYLES } from '@/constants/dance-styles';
 import { FORRO_ATTRIBUTES } from '@/constants/forro-attributes';
 import { newUUID } from '@/utils/uuid';
 
-const SCHEMA_VERSION = '2';
+const SCHEMA_VERSION = '3';
 
 export async function initDatabase(db: SQLiteDatabase): Promise<void> {
   await db.execAsync('PRAGMA journal_mode = WAL');
@@ -142,6 +142,13 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
       sequence_id TEXT NOT NULL REFERENCES sequences(id) ON DELETE CASCADE,
       movement_id TEXT NOT NULL REFERENCES movements(id) ON DELETE CASCADE,
       position INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS movement_steps (
+      id TEXT PRIMARY KEY,
+      movement_id TEXT NOT NULL REFERENCES movements(id) ON DELETE CASCADE,
+      idx INTEGER NOT NULL,
+      time_ms INTEGER NOT NULL
     );
   `);
 
