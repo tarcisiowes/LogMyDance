@@ -1,7 +1,7 @@
 // Backup format — see docs/logmydance-roadmap.md "CORREÇÃO 3".
 
 export const BACKUP_VERSION = 1;
-export const APP_SCHEMA_VERSION = 1;
+export const APP_SCHEMA_VERSION = 2;
 
 // Files larger than this are not hashed during export (perf/memory guard).
 // Integrity for these falls back to existence + size on import.
@@ -20,6 +20,12 @@ export const RESTORE_TABLES_ORDER = [
   'template_tags',
   'movement_progress',
   'media_assets',
+  // Forró categorization + sequences (parents before children).
+  'attribute_dimensions',
+  'attribute_values',
+  'sequences',
+  'movement_attributes',
+  'sequence_items',
 ] as const;
 
 export interface MediaFileEntry {

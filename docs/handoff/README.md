@@ -23,3 +23,4 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Sprint 4 — Sentry (crash-only) | [13](2026-06-13-13-sentry-crash-only.md) |
 | 2026-06-13 | Sprint 5 — Beta polish (diagnostics/feedback) | [14](2026-06-13-14-beta-polish.md) |
 | 2026-06-13 | Sprint 7 — Compliance code (privacy/R8/dep gate) | [15](2026-06-13-15-sprint7-compliance.md) |
+| 2026-06-13 | Forró categorization + Sequence builder (phase 1) | [16](2026-06-13-16-sequences-feature.md) |
