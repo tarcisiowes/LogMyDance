@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Dumbbell, LayoutTemplate, BarChart2 } from 'lucide-react-native';
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
@@ -19,7 +21,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Journal',
+          title: t('tabs.journal'),
           tabBarIcon: ({ color, size }) => (
             <BookOpen color={color} size={size} />
           ),
@@ -28,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="movements"
         options={{
-          title: 'Movements',
+          title: t('tabs.movements'),
           tabBarIcon: ({ color, size }) => (
             <Dumbbell color={color} size={size} />
           ),
@@ -37,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="templates"
         options={{
-          title: 'Templates',
+          title: t('tabs.templates'),
           tabBarIcon: ({ color, size }) => (
             <LayoutTemplate color={color} size={size} />
           ),
@@ -46,7 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: 'Stats',
+          title: t('tabs.stats'),
           tabBarIcon: ({ color, size }) => (
             <BarChart2 color={color} size={size} />
           ),

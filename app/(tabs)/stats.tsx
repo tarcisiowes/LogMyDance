@@ -1,100 +1,226 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useCallback, useState } from 'react';
 import { router, useFocusEffect, type Href } from 'expo-router';
-import { Database, ChevronRight } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Database, ChevronRight, Settings, Flame } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { Card } from '@/components/ui/Card';
+import { statsRepo, type StatsData } from '@/repositories/stats';
 import { preferences } from '@/stores/preferences';
+import { MOODS } from '@/constants/moods';
+import { MOVEMENT_STATUSES } from '@/constants/statuses';
 
-type Stats = {
-  entriesCount: number;
-  movementsCount: number;
-  templatesCount: number;
-  appOpens: number;
+const EMPTY: StatsData = {
+  totalEntries: 0,
+  totalMovements: 0,
+  totalMinutes: 0,
+  weekEntries: 0,
+  monthEntries: 0,
+  currentStreak: 0,
+  longestStreak: 0,
+  byStyle: [],
+  byMood: [],
+  byStatus: [],
 };
+
+function formatPracticeTime(min: number): string {
+  if (min <= 0) return '0';
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m ? `${h}h ${m}m` : `${h}h`;
+}
 
 export default function StatsScreen() {
   const db = useDb();
-  const [stats, setStats] = useState<Stats>({
-    entriesCount: 0,
-    movementsCount: 0,
-    templatesCount: 0,
-    appOpens: 0,
-  });
+  const { t } = useTranslation();
+  const [stats, setStats] = useState<StatsData>(EMPTY);
+  const [appOpens, setAppOpens] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
-      async function load() {
-        const [entries, movements, templates] = await Promise.all([
-          db.$client.getFirstAsync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM dance_entries'
-          ),
-          db.$client.getFirstAsync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM movements'
-          ),
-          db.$client.getFirstAsync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM class_templates'
-          ),
-        ]);
-
-        setStats({
-          entriesCount: entries?.count ?? 0,
-          movementsCount: movements?.count ?? 0,
-          templatesCount: templates?.count ?? 0,
-          appOpens: preferences.getAppOpens(),
-        });
-      }
-      load();
+      let active = true;
+      statsRepo(db)
+        .getStats()
+        .then((data) => {
+          if (active) setStats(data);
+        })
+        .catch(() => {});
+      setAppOpens(preferences.getAppOpens());
+      return () => {
+        active = false;
+      };
     }, [db])
   );
+
+  const hasData = stats.totalEntries > 0 || stats.totalMovements > 0;
+  const moodTotal = stats.byMood.reduce((sum, m) => sum + m.count, 0);
+  const statusTotal = stats.byStatus.reduce((sum, s) => sum + s.count, 0);
 
   return (
     <ScrollView
       className="flex-1 bg-neutral-950"
       contentContainerStyle={{ padding: 16, gap: 12 }}
     >
-      <Text className="text-neutral-400 text-sm font-medium uppercase tracking-wider mb-2">
-        Beta Diagnostics
-      </Text>
+      <SectionLabel>{t('stats.overview')}</SectionLabel>
 
       <View className="flex-row gap-3">
-        <StatCard emoji="📖" value={stats.entriesCount} label="Entries" />
-        <StatCard emoji="💪" value={stats.movementsCount} label="Movements" />
+        <StatCard emoji="📖" value={stats.totalEntries} label={t('stats.totalEntries')} />
+        <StatCard emoji="💪" value={stats.totalMovements} label={t('stats.totalMovements')} />
       </View>
       <View className="flex-row gap-3">
-        <StatCard emoji="📋" value={stats.templatesCount} label="Templates" />
-        <StatCard emoji="🚀" value={stats.appOpens} label="App opens" />
+        <StatCard
+          value={formatPracticeTime(stats.totalMinutes)}
+          label={t('stats.practiceTime')}
+          emoji="⏱️"
+        />
+        <Card className="flex-1 items-center gap-1">
+          <Flame color={stats.currentStreak > 0 ? '#f97316' : '#3f3f46'} size={28} />
+          <Text className="text-neutral-100 text-2xl font-bold">
+            {stats.currentStreak} {t(stats.currentStreak === 1 ? 'stats.day' : 'stats.days')}
+          </Text>
+          <Text className="text-neutral-500 text-xs">{t('stats.currentStreak')}</Text>
+        </Card>
+      </View>
+
+      <View className="flex-row gap-3">
+        <MiniStat value={stats.weekEntries} label={t('stats.thisWeek')} suffix={t('stats.entriesLabel')} />
+        <MiniStat value={stats.monthEntries} label={t('stats.thisMonth')} suffix={t('stats.entriesLabel')} />
+      </View>
+
+      {!hasData && (
+        <Card>
+          <Text className="text-neutral-400 text-sm text-center">{t('stats.noData')}</Text>
+        </Card>
+      )}
+
+      {stats.byStyle.length > 0 && (
+        <Card className="gap-3 mt-2">
+          <Text className="text-neutral-200 font-semibold">{t('stats.byStyle')}</Text>
+          {stats.byStyle.map((s) => (
+            <BarRow
+              key={String(s.styleId)}
+              label={`${s.icon ?? '🎵'}  ${s.name ?? t('common.none')}`}
+              count={s.count}
+              max={stats.byStyle[0].count}
+              color="#a855f7"
+            />
+          ))}
+        </Card>
+      )}
+
+      {moodTotal > 0 && (
+        <Card className="gap-3">
+          <Text className="text-neutral-200 font-semibold">{t('stats.moodBreakdown')}</Text>
+          {MOODS.map((mood) => {
+            const count = stats.byMood.find((m) => m.mood === mood.value)?.count ?? 0;
+            if (count === 0) return null;
+            return (
+              <BarRow
+                key={mood.value}
+                label={`${mood.emoji}  ${mood.label}`}
+                count={count}
+                max={moodTotal}
+                color={mood.color}
+              />
+            );
+          })}
+        </Card>
+      )}
+
+      {statusTotal > 0 && (
+        <Card className="gap-3">
+          <Text className="text-neutral-200 font-semibold">{t('stats.movementProgress')}</Text>
+          {MOVEMENT_STATUSES.map((status) => {
+            const count = stats.byStatus.find((s) => s.status === status.value)?.count ?? 0;
+            if (count === 0) return null;
+            return (
+              <BarRow
+                key={status.value}
+                label={status.label}
+                count={count}
+                max={statusTotal}
+                color={status.color}
+              />
+            );
+          })}
+        </Card>
+      )}
+
+      <SectionLabel className="mt-4">{t('stats.betaDiagnostics')}</SectionLabel>
+      <View className="flex-row gap-3">
+        <MiniStat value={appOpens} label={t('stats.appOpens')} />
+        <MiniStat value={stats.longestStreak} label={t('stats.longestStreak')} />
       </View>
 
       <Card
-        className="mt-4 flex-row items-center gap-3"
+        className="mt-2 flex-row items-center gap-3"
         onPress={() => router.push('/storage' as Href)}
       >
         <Database color="#a855f7" size={20} />
         <View className="flex-1">
-          <Text className="text-neutral-100 font-semibold">Storage & Backup</Text>
-          <Text className="text-neutral-500 text-xs">
-            Export, import, and manage media
-          </Text>
+          <Text className="text-neutral-100 font-semibold">{t('stats.storageBackup')}</Text>
+          <Text className="text-neutral-500 text-xs">{t('stats.storageBackupDesc')}</Text>
         </View>
         <ChevronRight color="#525252" size={18} />
       </Card>
 
-      <Card className="mt-2">
-        <Text className="text-neutral-400 text-xs text-center">
-          More stats coming in Sprint 4 ✨
-        </Text>
+      <Card
+        className="flex-row items-center gap-3"
+        onPress={() => router.push('/settings' as Href)}
+      >
+        <Settings color="#a855f7" size={20} />
+        <View className="flex-1">
+          <Text className="text-neutral-100 font-semibold">{t('stats.settings')}</Text>
+          <Text className="text-neutral-500 text-xs">{t('stats.settingsDesc')}</Text>
+        </View>
+        <ChevronRight color="#525252" size={18} />
       </Card>
     </ScrollView>
   );
 }
 
-function StatCard({ emoji, value, label }: { emoji: string; value: number; label: string }) {
+function SectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <Text className={`text-neutral-400 text-sm font-medium uppercase tracking-wider ${className}`}>
+      {children}
+    </Text>
+  );
+}
+
+function StatCard({ emoji, value, label }: { emoji: string; value: number | string; label: string }) {
   return (
     <Card className="flex-1 items-center gap-1">
       <Text className="text-3xl">{emoji}</Text>
       <Text className="text-neutral-100 text-2xl font-bold">{value}</Text>
+      <Text className="text-neutral-500 text-xs text-center">{label}</Text>
+    </Card>
+  );
+}
+
+function MiniStat({ value, label, suffix }: { value: number; label: string; suffix?: string }) {
+  return (
+    <Card className="flex-1 gap-0.5">
+      <Text className="text-neutral-100 text-xl font-bold">
+        {value}
+        {suffix ? <Text className="text-neutral-500 text-sm font-normal"> {suffix}</Text> : null}
+      </Text>
       <Text className="text-neutral-500 text-xs">{label}</Text>
     </Card>
+  );
+}
+
+function BarRow({ label, count, max, color }: { label: string; count: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.max(6, Math.round((count / max) * 100)) : 0;
+  return (
+    <View className="gap-1.5">
+      <View className="flex-row justify-between">
+        <Text className="text-neutral-300 text-sm">{label}</Text>
+        <Text className="text-neutral-400 text-sm font-medium">{count}</Text>
+      </View>
+      <View className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+        <View style={{ width: `${pct}%`, backgroundColor: color }} className="h-full rounded-full" />
+      </View>
+    </View>
   );
 }

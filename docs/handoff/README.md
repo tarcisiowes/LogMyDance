@@ -16,3 +16,6 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Backup import / restore service | [06](2026-06-13-06-backup-import.md) |
 | 2026-06-13 | Storage & Backup screen + wiring | [07](2026-06-13-07-storage-ui.md) |
 | 2026-06-13 | Android build fix (namespace + missing icon) | [08](2026-06-13-08-android-build-fix.md) |
+| 2026-06-13 | Sprint 4 — i18n infrastructure (EN + PT-BR) | [09](2026-06-13-09-i18n-infra.md) |
+| 2026-06-13 | Sprint 4 — Onboarding flow | [10](2026-06-13-10-onboarding.md) |
+| 2026-06-13 | Sprint 4 — Rich Stats screen | [11](2026-06-13-11-rich-stats.md) |

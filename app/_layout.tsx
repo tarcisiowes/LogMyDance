@@ -1,6 +1,8 @@
 import '../global.css';
+import '@/i18n';
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, router, type Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SQLiteProvider } from 'expo-sqlite';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
@@ -15,11 +17,15 @@ function AppStartup() {
     preferences.incrementAppOpens();
     // Silent orphan cleanup on each startup
     mediaRepo(db).cleanupOrphans().catch(() => {});
+    if (!preferences.isOnboardingComplete()) {
+      router.replace('/onboarding' as Href);
+    }
   }, [db]);
   return null;
 }
 
 export default function RootLayout() {
+  const { t } = useTranslation();
 
   return (
     <GestureHandlerRootView className="flex-1">
@@ -68,6 +74,11 @@ export default function RootLayout() {
               name="storage"
               options={{ title: 'Storage & Backup', presentation: 'card' }}
             />
+            <Stack.Screen
+              name="settings"
+              options={{ title: t('settings.title'), presentation: 'card' }}
+            />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           </Stack>
         </DbProvider>
       </SQLiteProvider>
