@@ -28,3 +28,4 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Step markers (pisadas) + BPM tempo sync | [18](2026-06-13-18-step-markers-bpm-sync.md) |
 | 2026-06-13 | Per-directory CLAUDE.md context files | [19](2026-06-13-19-per-dir-claude-md.md) |
 | 2026-06-13 | Step-marked badge on movement cards | [20](2026-06-13-20-step-marked-badge.md) |
+| 2026-06-14 | Video capture/sources rework + foot attribute fix | [21](2026-06-14-21-video-capture-sources-foot-fix.md) |

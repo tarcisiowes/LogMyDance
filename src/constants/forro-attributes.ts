@@ -10,7 +10,6 @@ export type ForroDimension = {
 const FOOT_VALUES: ForroValue[] = [
   { key: 'direito', label: 'Direito' },
   { key: 'esquerdo', label: 'Esquerdo' },
-  { key: 'indiferente', label: 'Indiferente' },
 ];
 
 /**

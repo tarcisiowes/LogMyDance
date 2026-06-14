@@ -36,6 +36,7 @@ export function initSentry(): void {
 export type ErrorEvent =
   | 'file_import_failed'
   | 'video_thumbnail_failed'
+  | 'gallery_save_failed'
   | 'export_failed'
   | 'restore_failed'
   | 'db_migration_error';

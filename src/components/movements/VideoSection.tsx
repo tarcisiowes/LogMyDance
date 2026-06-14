@@ -1,16 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
-import { VideoView, createVideoPlayer, useVideoPlayer } from 'expo-video';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-import * as FileSystem from 'expo-file-system/legacy';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { Play, Pause, Video, Trash2 } from 'lucide-react-native';
 import { useDb } from '@/db/context';
-import { mediaRepo, ensureMediaDirs, videoPath, thumbPath } from '@/repositories/media';
+import { mediaRepo } from '@/repositories/media';
+import { pickVideo, importVideoForMovement, type VideoSource } from '@/services/video-import';
 import { captureError } from '@/services/sentry';
-import { newUUID } from '@/utils/uuid';
+import { VideoSourceButtons } from './VideoSourceButtons';
 import type { MediaAsset } from '@/types';
 
 interface VideoSectionProps {
@@ -31,13 +29,11 @@ export function VideoSection({
   const [importing, setImporting] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showReplace, setShowReplace] = useState(false);
 
-  const player = useVideoPlayer(
-    videoAsset?.localPath ?? null,
-    (p) => {
-      p.loop = false;
-    }
-  );
+  const player = useVideoPlayer(videoAsset?.localPath ?? null, (p) => {
+    p.loop = false;
+  });
 
   useEffect(() => {
     const sub = player.addListener('playingChange', (e) => {
@@ -46,61 +42,31 @@ export function VideoSection({
     return () => sub.remove();
   }, [player]);
 
-  const handleImport = useCallback(async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert(t('video.permissionTitle'), t('video.permissionBody'));
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['videos'],
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (result.canceled || !result.assets[0]) return;
-
-    const asset = result.assets[0];
-
-    try {
-      setImporting(true);
-      await ensureMediaDirs();
-
-      const videoId = newUUID();
-      const destVideoPath = videoPath(videoId);
-
-      await FileSystem.copyAsync({ from: asset.uri, to: destVideoPath });
-
-      const info = await FileSystem.getInfoAsync(destVideoPath);
-      const sizeBytes = info.exists ? info.size : undefined;
-
-      const repo = mediaRepo(db);
-
-      if (videoAsset) {
-        await repo.deleteForMovement(movementId);
+  const pick = useCallback(
+    async (source: VideoSource) => {
+      const res = await pickVideo(source);
+      if (!res.ok) {
+        if (res.reason === 'permission-camera') {
+          Alert.alert(t('video.permissionTitle'), t('video.cameraPermissionBody'));
+        } else if (res.reason === 'permission-library') {
+          Alert.alert(t('video.permissionTitle'), t('video.permissionBody'));
+        }
+        return;
       }
-
-      await repo.createVideoAsset({
-        movementId,
-        localPath: destVideoPath,
-        originalFilename: asset.fileName ?? undefined,
-        sizeBytes,
-        durationMs: asset.duration ? Math.round(asset.duration) : undefined,
-        width: asset.width ?? undefined,
-        height: asset.height ?? undefined,
-      });
-
-      await generateAndSaveThumbnail(destVideoPath, videoId, movementId, db);
-
-      onMediaChanged();
-    } catch (e) {
-      captureError(e, 'file_import_failed');
-      Alert.alert(t('video.importFailedTitle'), t('video.importFailedBody'));
-    } finally {
-      setImporting(false);
-    }
-  }, [movementId, videoAsset, db, onMediaChanged, t]);
+      try {
+        setImporting(true);
+        setShowReplace(false);
+        await importVideoForMovement(db, movementId, res.video);
+        onMediaChanged();
+      } catch (e) {
+        captureError(e, 'file_import_failed');
+        Alert.alert(t('video.importFailedTitle'), t('video.importFailedBody'));
+      } finally {
+        setImporting(false);
+      }
+    },
+    [db, movementId, onMediaChanged, t]
+  );
 
   const handleDelete = useCallback(() => {
     Alert.alert(t('video.removeTitle'), t('video.removeBody'), [
@@ -127,15 +93,7 @@ export function VideoSection({
   }
 
   if (!videoAsset) {
-    return (
-      <Pressable
-        onPress={handleImport}
-        className="border-2 border-dashed border-neutral-700 rounded-2xl p-6 items-center gap-3 active:border-violet-500"
-      >
-        <Video color="#737373" size={32} />
-        <Text className="text-neutral-400 text-sm">{t('video.tapToImport')}</Text>
-      </Pressable>
-    );
+    return <VideoSourceButtons onPick={pick} />;
   }
 
   return (
@@ -196,47 +154,12 @@ export function VideoSection({
             ? ` · ${Math.round(videoAsset.durationMs / 1000)}s`
             : ''}
         </Text>
-        <Pressable onPress={handleImport} className="p-1">
+        <Pressable onPress={() => setShowReplace((v) => !v)} className="p-1">
           <Text className="text-violet-400 text-xs">{t('video.replace')}</Text>
         </Pressable>
       </View>
+
+      {showReplace ? <VideoSourceButtons onPick={pick} /> : null}
     </View>
   );
-}
-
-async function generateAndSaveThumbnail(
-  videoUri: string,
-  videoId: string,
-  movementId: string,
-  db: ReturnType<typeof useDb>
-): Promise<void> {
-  let tempPlayer: ReturnType<typeof createVideoPlayer> | null = null;
-  try {
-    tempPlayer = createVideoPlayer(videoUri);
-    const thumbnails = await tempPlayer.generateThumbnailsAsync([0]);
-    if (!thumbnails.length) return;
-
-    const thumbnail = thumbnails[0];
-    const destThumbPath = thumbPath(videoId);
-
-    const saved = await ImageManipulator.manipulateAsync(
-      thumbnail as any,
-      [],
-      { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG, base64: false }
-    );
-
-    await FileSystem.copyAsync({ from: saved.uri, to: destThumbPath });
-
-    await mediaRepo(db).createThumbnailAsset({
-      movementId,
-      localPath: destThumbPath,
-      width: thumbnail.width,
-      height: thumbnail.height,
-    });
-  } catch (err) {
-    // Thumbnail generation failed silently — video still works
-    captureError(err, 'video_thumbnail_failed');
-  } finally {
-    tempPlayer?.release?.();
-  }
 }

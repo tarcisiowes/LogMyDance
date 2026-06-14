@@ -156,6 +156,12 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
   // installs and upgrades (runs whenever the dimensions table is empty).
   await seedAttributes(db);
 
+  // Idempotent cleanup: the neutral "indiferente" foot value was removed from
+  // the taxonomy (a step starts/ends on the right OR left foot, never both).
+  // seedAttributes won't re-run on populated installs, so retire the seeded row
+  // here. Cascades to movement_attributes via the FK ON DELETE CASCADE.
+  await retireRemovedAttributeValues(db);
+
   const meta = await db.getFirstAsync<{ value: string }>(
     'SELECT value FROM app_metadata WHERE key = ?',
     ['schema_version']
@@ -181,6 +187,17 @@ async function seedDatabase(db: SQLiteDatabase): Promise<void> {
       [style.name, style.icon]
     );
   }
+}
+
+async function retireRemovedAttributeValues(db: SQLiteDatabase): Promise<void> {
+  // Default (non-custom) foot values that no longer exist in FORRO_ATTRIBUTES.
+  await db.runAsync(
+    `DELETE FROM attribute_values
+     WHERE key = 'indiferente' AND is_custom = 0
+     AND dimension_id IN (
+       SELECT id FROM attribute_dimensions WHERE key IN ('pe_inicio', 'pe_fim')
+     )`
+  );
 }
 
 async function seedAttributes(db: SQLiteDatabase): Promise<void> {

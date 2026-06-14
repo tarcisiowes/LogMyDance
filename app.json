@@ -17,7 +17,9 @@
       "bundleIdentifier": "com.logmydance.app",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Log My Dance needs access to your photo library to import dance videos.",
-        "NSCameraUsageDescription": "Log My Dance needs camera access to record dance videos."
+        "NSPhotoLibraryAddUsageDescription": "Log My Dance saves the dance videos you record to your photo library.",
+        "NSCameraUsageDescription": "Log My Dance needs camera access to record dance videos.",
+        "NSMicrophoneUsageDescription": "Log My Dance needs microphone access to record sound with your dance videos."
       }
     },
     "android": {
@@ -38,6 +40,22 @@
       ],
       "expo-video",
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Log My Dance needs access to your photo library to import dance videos.",
+          "cameraPermission": "Log My Dance needs camera access to record dance videos.",
+          "microphonePermission": "Log My Dance needs microphone access to record sound with your dance videos."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Log My Dance needs access to your photo library to import dance videos.",
+          "savePhotosPermission": "Log My Dance saves the dance videos you record to your photo library.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
       "expo-sharing",
       "expo-localization",
       "@sentry/react-native"

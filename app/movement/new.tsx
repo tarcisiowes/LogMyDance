@@ -5,11 +5,19 @@ import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Video, Trash2 } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { movementsRepo } from '@/repositories/movements';
 import { stylesRepo } from '@/repositories/styles';
+import {
+  pickVideo,
+  importVideoForMovement,
+  type PickedVideo,
+  type VideoSource,
+} from '@/services/video-import';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { VideoSourceButtons } from '@/components/movements/VideoSourceButtons';
 import { MOVEMENT_STATUSES } from '@/constants/statuses';
 import { statusKey } from '@/i18n/labels';
 import type { Style } from '@/types';
@@ -27,6 +35,7 @@ export default function NewMovementScreen() {
   const [styles, setStyles] = useState<Style[]>([]);
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState('new');
+  const [stagedVideo, setStagedVideo] = useState<PickedVideo | null>(null);
   const [saving, setSaving] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -37,15 +46,37 @@ export default function NewMovementScreen() {
     stylesRepo(db).getAll().then((s) => setStyles(s as Style[]));
   }, [db]);
 
+  const pick = async (source: VideoSource) => {
+    const res = await pickVideo(source);
+    if (!res.ok) {
+      if (res.reason === 'permission-camera') {
+        Alert.alert(t('video.permissionTitle'), t('video.cameraPermissionBody'));
+      } else if (res.reason === 'permission-library') {
+        Alert.alert(t('video.permissionTitle'), t('video.permissionBody'));
+      }
+      return;
+    }
+    setStagedVideo(res.video);
+  };
+
   const onSubmit = async (data: FormData) => {
     try {
       setSaving(true);
-      await movementsRepo(db).create({
+      const movementId = await movementsRepo(db).create({
         name: data.name,
         styleId: selectedStyleId,
         status: selectedStatus as any,
         notes: data.notes || null,
       });
+      if (stagedVideo) {
+        try {
+          await importVideoForMovement(db, movementId, stagedVideo);
+        } catch {
+          // Movement is saved; only the video attach failed. Let the user
+          // re-add it from the movement screen rather than losing the entry.
+          Alert.alert(t('video.importFailedTitle'), t('video.importFailedBody'));
+        }
+      }
       router.back();
     } catch {
       Alert.alert(t('common.error'), t('movement.errorSave'));
@@ -60,6 +91,32 @@ export default function NewMovementScreen() {
       contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 48 }}
       keyboardShouldPersistTaps="handled"
     >
+      <View className="gap-1">
+        <Text className="text-sm font-medium text-neutral-400">{t('forms.video')}</Text>
+        {stagedVideo ? (
+          <View className="rounded-2xl border border-neutral-800 bg-neutral-900 p-3 flex-row items-center gap-3">
+            <View className="w-12 h-12 rounded-xl bg-neutral-800 items-center justify-center">
+              <Video color="#a855f7" size={22} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-neutral-100 text-sm" numberOfLines={1}>
+                {stagedVideo.fileName ?? t('video.selected')}
+              </Text>
+              {stagedVideo.durationMs ? (
+                <Text className="text-neutral-500 text-xs">
+                  {Math.round(stagedVideo.durationMs / 1000)}s
+                </Text>
+              ) : null}
+            </View>
+            <Pressable onPress={() => setStagedVideo(null)} className="p-2">
+              <Trash2 color="#ef4444" size={18} />
+            </Pressable>
+          </View>
+        ) : (
+          <VideoSourceButtons onPick={pick} />
+        )}
+      </View>
+
       <Controller
         control={control}
         name="name"
