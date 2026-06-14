@@ -24,4 +24,7 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Sprint 5 — Beta polish (diagnostics/feedback) | [14](2026-06-13-14-beta-polish.md) |
 | 2026-06-13 | Sprint 7 — Compliance code (privacy/R8/dep gate) | [15](2026-06-13-15-sprint7-compliance.md) |
 | 2026-06-13 | Forró categorization + Sequence builder (phase 1) | [16](2026-06-13-16-sequences-feature.md) |
+| 2026-06-13 | Phase 2/3 single-mp4 concat + sync export (FFmpeg) | 17 — _on branch `feat/sequence-concat`, not on master_ |
 | 2026-06-13 | Step markers (pisadas) + BPM tempo sync | [18](2026-06-13-18-step-markers-bpm-sync.md) |
+| 2026-06-13 | Per-directory CLAUDE.md context files | [19](2026-06-13-19-per-dir-claude-md.md) |
+| 2026-06-13 | Step-marked badge on movement cards | [20](2026-06-13-20-step-marked-badge.md) |
