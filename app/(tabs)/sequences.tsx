@@ -76,7 +76,7 @@ export default function SequencesScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="🎬"
+            Icon={Film}
             title={t('sequences.emptyTitle')}
             subtitle={t('sequences.emptySubtitle')}
           />

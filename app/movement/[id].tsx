@@ -157,7 +157,7 @@ export default function MovementDetailScreen() {
                     : 'bg-neutral-800 border-neutral-700'
                 }`}
               >
-                <Text className="text-neutral-100 text-sm">{s.icon} {s.name}</Text>
+                <Text className="text-neutral-100 text-sm">{s.name}</Text>
               </Pressable>
             ))}
           </View>

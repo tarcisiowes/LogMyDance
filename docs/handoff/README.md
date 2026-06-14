@@ -30,3 +30,4 @@ Naming: `YYYY-MM-DD-NN-slug.md`
 | 2026-06-13 | Step-marked badge on movement cards | [20](2026-06-13-20-step-marked-badge.md) |
 | 2026-06-14 | Video capture/sources rework + foot attribute fix | [21](2026-06-14-21-video-capture-sources-foot-fix.md) |
 | 2026-06-14 | Package / bundle id → com.showasoul.logmydance | [22](2026-06-14-22-package-rename.md) |
+| 2026-06-14 | Emoji → lucide icons + visual refresh | [23](2026-06-14-23-emoji-to-icons-visual-refresh.md) |

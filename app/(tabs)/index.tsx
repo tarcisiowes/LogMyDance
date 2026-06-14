@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import { Plus } from 'lucide-react-native';
+import { Plus, BookOpen } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { entriesRepo } from '@/repositories/entries';
 import { tagsRepo } from '@/repositories/tags';
@@ -80,7 +80,7 @@ export default function JournalScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="📖"
+            Icon={BookOpen}
             title={t('entry.emptyTitle')}
             subtitle={t('entry.emptySubtitle')}
           />

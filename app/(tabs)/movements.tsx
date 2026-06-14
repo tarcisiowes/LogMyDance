@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import { Plus } from 'lucide-react-native';
+import { Plus, Dumbbell } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { movementsRepo } from '@/repositories/movements';
 import { stylesRepo } from '@/repositories/styles';
@@ -78,7 +78,7 @@ export default function MovementsScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="💪"
+            Icon={Dumbbell}
             title={t('movement.emptyTitle')}
             subtitle={t('movement.emptySubtitle')}
           />

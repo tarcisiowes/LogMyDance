@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import { Plus } from 'lucide-react-native';
+import { Plus, LayoutTemplate } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { templatesRepo } from '@/repositories/templates';
 import { tagsRepo } from '@/repositories/tags';
@@ -79,7 +79,7 @@ export default function TemplatesScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="📋"
+            Icon={LayoutTemplate}
             title={t('template.emptyTitle')}
             subtitle={t('template.emptySubtitle')}
           />

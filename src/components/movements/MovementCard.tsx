@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { Image } from 'expo-image';
-import { Footprints } from 'lucide-react-native';
+import { Footprints, Music } from 'lucide-react-native';
 import { Card } from '@/components/ui/Card';
 import { StatusBadge } from './StatusBadge';
 import type { MediaAsset, Movement, Style } from '@/types';
@@ -24,7 +24,7 @@ export function MovementCard({ movement, style, thumbnail, stepCount = 0, onPres
         />
       ) : (
         <View className="w-[72px] h-[72px] bg-neutral-800 items-center justify-center">
-          <Text className="text-2xl">💃</Text>
+          <Music color="#737373" size={26} />
         </View>
       )}
       <View className="flex-1 justify-center py-3 pr-3 gap-1.5">
@@ -36,9 +36,7 @@ export function MovementCard({ movement, style, thumbnail, stepCount = 0, onPres
         </View>
         <View className="flex-row items-center gap-2">
           {style ? (
-            <Text className="text-neutral-500 text-xs">
-              {style.icon} {style.name}
-            </Text>
+            <Text className="text-neutral-500 text-xs">{style.name}</Text>
           ) : null}
           {stepCount > 0 ? (
             <View className="flex-row items-center gap-1">

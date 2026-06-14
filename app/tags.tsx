@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Plus, Trash2 } from 'lucide-react-native';
+import { Plus, Trash2, Tag as TagIcon, Check } from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { tagsRepo } from '@/repositories/tags';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -72,11 +72,9 @@ export default function TagsScreen() {
                 key={color}
                 onPress={() => setNewColor(color)}
                 style={{ backgroundColor: color }}
-                className={`w-7 h-7 rounded-full ${newColor === color ? 'ring-2' : ''}`}
+                className={`w-7 h-7 rounded-full items-center justify-center ${newColor === color ? 'ring-2' : ''}`}
               >
-                {newColor === color ? (
-                  <Text className="text-white text-center text-sm leading-7">✓</Text>
-                ) : null}
+                {newColor === color ? <Check color="#fff" size={14} /> : null}
               </Pressable>
             ))}
           </View>
@@ -108,7 +106,7 @@ export default function TagsScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState emoji="🏷️" title={t('tags.emptyTitle')} subtitle={t('tags.emptySubtitle')} />
+          <EmptyState Icon={TagIcon} title={t('tags.emptyTitle')} subtitle={t('tags.emptySubtitle')} />
         }
       />
     </View>

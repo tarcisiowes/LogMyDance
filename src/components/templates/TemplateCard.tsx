@@ -1,7 +1,9 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { User, MapPin, Clock } from 'lucide-react-native';
 import { Card } from '@/components/ui/Card';
 import { TagChip } from '@/components/ui/TagChip';
+import { MetaItem } from '@/components/ui/MetaItem';
 import type { ClassTemplate, Style, Tag } from '@/types';
 
 interface TemplateCardProps {
@@ -17,20 +19,14 @@ export function TemplateCard({ template, style, tags = [], onPress }: TemplateCa
     <Card onPress={onPress} className="gap-2">
       <Text className="text-neutral-100 text-base font-semibold">{template.name}</Text>
 
-      <View className="flex-row flex-wrap gap-3">
+      <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1.5">
         {style ? (
-          <Text className="text-neutral-400 text-xs">
-            {style.icon} {style.name}
-          </Text>
+          <Text className="text-neutral-400 text-xs">{style.name}</Text>
         ) : null}
-        {template.instructor ? (
-          <Text className="text-neutral-400 text-xs">👤 {template.instructor}</Text>
-        ) : null}
-        {template.location ? (
-          <Text className="text-neutral-400 text-xs">📍 {template.location}</Text>
-        ) : null}
+        {template.instructor ? <MetaItem Icon={User} text={template.instructor} /> : null}
+        {template.location ? <MetaItem Icon={MapPin} text={template.location} /> : null}
         {template.defaultDuration ? (
-          <Text className="text-neutral-400 text-xs">⏱ {template.defaultDuration} {t('common.minShort')}</Text>
+          <MetaItem Icon={Clock} text={`${template.defaultDuration} ${t('common.minShort')}`} />
         ) : null}
       </View>
 

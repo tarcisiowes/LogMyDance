@@ -4,7 +4,17 @@ import { router, useFocusEffect, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 import Constants from 'expo-constants';
-import { Database, ChevronRight, Settings, Flame, Share2 } from 'lucide-react-native';
+import {
+  Database,
+  ChevronRight,
+  Settings,
+  Flame,
+  Share2,
+  BookOpen,
+  Dumbbell,
+  Clock,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useDb } from '@/db/context';
 import { Card } from '@/components/ui/Card';
 import { statsRepo, type StatsData } from '@/repositories/stats';
@@ -87,14 +97,14 @@ export default function StatsScreen() {
       <SectionLabel>{t('stats.overview')}</SectionLabel>
 
       <View className="flex-row gap-3">
-        <StatCard emoji="📖" value={stats.totalEntries} label={t('stats.totalEntries')} />
-        <StatCard emoji="💪" value={stats.totalMovements} label={t('stats.totalMovements')} />
+        <StatCard Icon={BookOpen} value={stats.totalEntries} label={t('stats.totalEntries')} />
+        <StatCard Icon={Dumbbell} value={stats.totalMovements} label={t('stats.totalMovements')} />
       </View>
       <View className="flex-row gap-3">
         <StatCard
+          Icon={Clock}
           value={formatPracticeTime(stats.totalMinutes)}
           label={t('stats.practiceTime')}
-          emoji="⏱️"
         />
         <Card className="flex-1 items-center gap-1">
           <Flame color={stats.currentStreak > 0 ? '#f97316' : '#3f3f46'} size={28} />
@@ -122,7 +132,7 @@ export default function StatsScreen() {
           {stats.byStyle.map((s) => (
             <BarRow
               key={String(s.styleId)}
-              label={`${s.icon ?? '🎵'}  ${s.name ?? t('common.none')}`}
+              label={s.name ?? t('common.none')}
               count={s.count}
               max={stats.byStyle[0].count}
               color="#a855f7"
@@ -140,7 +150,8 @@ export default function StatsScreen() {
             return (
               <BarRow
                 key={mood.value}
-                label={`${mood.emoji}  ${mood.label}`}
+                Icon={mood.Icon}
+                label={mood.label}
                 count={count}
                 max={moodTotal}
                 color={mood.color}
@@ -218,10 +229,10 @@ function SectionLabel({ children, className = '' }: { children: React.ReactNode;
   );
 }
 
-function StatCard({ emoji, value, label }: { emoji: string; value: number | string; label: string }) {
+function StatCard({ Icon, value, label }: { Icon: LucideIcon; value: number | string; label: string }) {
   return (
-    <Card className="flex-1 items-center gap-1">
-      <Text className="text-3xl">{emoji}</Text>
+    <Card className="flex-1 items-center gap-1.5">
+      <Icon color="#a855f7" size={22} />
       <Text className="text-neutral-100 text-2xl font-bold">{value}</Text>
       <Text className="text-neutral-500 text-xs text-center">{label}</Text>
     </Card>
@@ -240,12 +251,27 @@ function MiniStat({ value, label, suffix }: { value: number; label: string; suff
   );
 }
 
-function BarRow({ label, count, max, color }: { label: string; count: number; max: number; color: string }) {
+function BarRow({
+  label,
+  count,
+  max,
+  color,
+  Icon,
+}: {
+  label: string;
+  count: number;
+  max: number;
+  color: string;
+  Icon?: LucideIcon;
+}) {
   const pct = max > 0 ? Math.max(6, Math.round((count / max) * 100)) : 0;
   return (
     <View className="gap-1.5">
-      <View className="flex-row justify-between">
-        <Text className="text-neutral-300 text-sm">{label}</Text>
+      <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center gap-1.5">
+          {Icon ? <Icon color={color} size={14} /> : null}
+          <Text className="text-neutral-300 text-sm">{label}</Text>
+        </View>
         <Text className="text-neutral-400 text-sm font-medium">{count}</Text>
       </View>
       <View className="h-2 bg-neutral-800 rounded-full overflow-hidden">

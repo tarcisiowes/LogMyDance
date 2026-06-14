@@ -11,15 +11,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { BookOpen, Dumbbell, ShieldCheck } from 'lucide-react-native';
 import { Button } from '@/components/ui/Button';
 import { preferences } from '@/stores/preferences';
 
 const { width } = Dimensions.get('window');
 
 const SLIDES = [
-  { emoji: '📖', titleKey: 'onboarding.slide1Title', bodyKey: 'onboarding.slide1Body' },
-  { emoji: '💪', titleKey: 'onboarding.slide2Title', bodyKey: 'onboarding.slide2Body' },
-  { emoji: '🔒', titleKey: 'onboarding.slide3Title', bodyKey: 'onboarding.slide3Body' },
+  { Icon: BookOpen, titleKey: 'onboarding.slide1Title', bodyKey: 'onboarding.slide1Body' },
+  { Icon: Dumbbell, titleKey: 'onboarding.slide2Title', bodyKey: 'onboarding.slide2Body' },
+  { Icon: ShieldCheck, titleKey: 'onboarding.slide3Title', bodyKey: 'onboarding.slide3Body' },
 ] as const;
 
 export default function OnboardingScreen() {
@@ -69,7 +70,9 @@ export default function OnboardingScreen() {
             style={{ width }}
             className="flex-1 items-center justify-center px-10"
           >
-            <Text className="text-8xl mb-8">{slide.emoji}</Text>
+            <View className="w-24 h-24 rounded-3xl bg-violet-600/15 border border-violet-600/30 items-center justify-center mb-8">
+              <slide.Icon color="#a855f7" size={44} />
+            </View>
             <Text className="text-neutral-50 text-3xl font-bold text-center mb-4">
               {t(slide.titleKey)}
             </Text>

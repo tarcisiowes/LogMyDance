@@ -110,7 +110,7 @@ export default function StorageScreen() {
         movements: m.movements_count,
       });
       const message = warnings.length
-        ? `${summary}\n\n⚠️ ${warnings.join(' ')}\n\n${t('storage.howImport')}`
+        ? `${summary}\n\n${warnings.join(' ')}\n\n${t('storage.howImport')}`
         : `${summary}\n\n${t('storage.howImport')}`;
 
       Alert.alert(t('storage.importBackupTitle'), message, [
