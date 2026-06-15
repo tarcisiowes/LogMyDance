@@ -113,9 +113,10 @@ PASSO 2 — Assets de release
       Paleta = terra (coral), NÃO o violet #9333ea da UI — split de marca consciente.
   [ ] (opcional) Play feature graphic 1024x500 + retheme UI p/ casar com ícone
   [x] Mover versionCode/version para app.json (android.versionCode=1, ios.buildNumber="1")
-      ⚠️ android/ é COMMITADO → build.gradle (versionCode 1) é a fonte real no build
-         local/EAS-sem-prebuild. Mantidos iguais (1). Bump futuro: editar OS DOIS,
-         ou migrar p/ fluxo prebuild (remover android/ do git).
+  [x] RESOLVIDO o gotcha do android/ commitado → adotado MANAGED PREBUILD:
+      android/ + ios/ untracked (gitignored), expo-build-properties guarda R8/minify
+      + targetSdk 35. app.json agora é fonte ÚNICA (ícone/versionCode/permissions/SDK).
+      EAS prebuilda no cloud. (commit 6f4344e)
   [ ] Hospedar Privacy Policy → obter URL pública
 
 PASSO 3 — Build assinado
