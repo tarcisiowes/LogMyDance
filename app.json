@@ -31,7 +31,6 @@
       },
       "package": "com.showasoul.logmydance",
       "versionCode": 1,
-      "targetSdkVersion": 35,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
@@ -71,7 +70,17 @@
       ],
       "expo-sharing",
       "expo-localization",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "targetSdkVersion": 35
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
