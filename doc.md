@@ -117,7 +117,8 @@ PASSO 2 — Assets de release
       android/ + ios/ untracked (gitignored), expo-build-properties guarda R8/minify
       + targetSdk 35. app.json agora é fonte ÚNICA (ícone/versionCode/permissions/SDK).
       EAS prebuilda no cloud. (commit 6f4344e)
-  [ ] Hospedar Privacy Policy → obter URL pública
+  [x] Privacy Policy HOSPEDADA → https://tarcisiowes.github.io/logmydance/
+      (EN+PT, toggle idioma; repo tarcisiowes.github.io /logmydance/index.html)
 
 PASSO 3 — Build assinado
   [x] Keystore real GERADO via EAS managed credentials (guardado nos servers EAS,
