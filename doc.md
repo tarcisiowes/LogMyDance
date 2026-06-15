@@ -111,7 +111,9 @@ PASSO 2 — Assets de release
   [x] Ícone real 1024x1024 + adaptive foreground (variante "noite" do kit:
       squircle near-black + footprint coral/pisada). icon.png + adaptive-icon.png.
       Paleta = terra (coral), NÃO o violet #9333ea da UI — split de marca consciente.
-  [ ] (opcional) Play feature graphic 1024x500 + retheme UI p/ casar com ícone
+  [x] Feature graphic 1024x500 → store-assets/feature-graphic.png
+  [x] Store icon 512x512 → store-assets/icon-store-512.png (downscale do noite, opaco)
+  [ ] Screenshots reais (tu, no device) + (opcional) retheme UI p/ casar com ícone
   [x] Mover versionCode/version para app.json (android.versionCode=1, ios.buildNumber="1")
   [x] RESOLVIDO o gotcha do android/ commitado → adotado MANAGED PREBUILD:
       android/ + ios/ untracked (gitignored), expo-build-properties guarda R8/minify
