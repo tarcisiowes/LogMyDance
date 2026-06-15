@@ -108,7 +108,10 @@ PASSO 1 — Tornar o MVP rodável e testado
   [ ] sentryDsn ainda vazio (crash-free não medível até preencher) — opcional
 
 PASSO 2 — Assets de release
-  [ ] Ícone real 1024x1024 + adaptive foreground (substituir placeholder)
+  [x] Ícone real 1024x1024 + adaptive foreground (variante "noite" do kit:
+      squircle near-black + footprint coral/pisada). icon.png + adaptive-icon.png.
+      Paleta = terra (coral), NÃO o violet #9333ea da UI — split de marca consciente.
+  [ ] (opcional) Play feature graphic 1024x500 + retheme UI p/ casar com ícone
   [x] Mover versionCode/version para app.json (android.versionCode=1, ios.buildNumber="1")
       ⚠️ android/ é COMMITADO → build.gradle (versionCode 1) é a fonte real no build
          local/EAS-sem-prebuild. Mantidos iguais (1). Bump futuro: editar OS DOIS,
@@ -116,12 +119,17 @@ PASSO 2 — Assets de release
   [ ] Hospedar Privacy Policy → obter URL pública
 
 PASSO 3 — Build assinado
-  [ ] Gerar upload keystore (keytool) — NÃO comitar
-  [ ] Configurar signingConfigs.release (ou EAS Build + Play App Signing)
+  [x] Keystore real GERADO via EAS managed credentials (guardado nos servers EAS,
+      sem arquivo local). Projeto @showa-soul/LogMyDance, projectId em app.json.
+  [x] Assinatura: EAS injeta o keystore no cloud build (production = app-bundle).
+      ⚠️ build.gradle release ainda usa signingConfigs.debug → só afeta ./gradlew
+         LOCAL (assinaria debug). Caminho de release = EAS Build (correto). Se um dia
+         buildar local p/ store, corrigir signingConfigs.release primeiro.
   [x] Criar eas.json (profiles development/preview/production + submit track=internal)
-      Pré-requisitos p/ usar: `eas login` + `eas init` (cria extra.eas.projectId);
-      submit ao Play precisa service-account JSON do Google. Alternativa local: ./gradlew bundleRelease
-  [ ] Gerar .aab e verificar minificação/tamanho
+  [x] eas login + eas init (extra.eas.projectId criado)
+  [ ] Gerar .aab: `eas build -p android --profile production` (consome build credit)
+  [ ] Verificar minificação/tamanho do .aab
+  [ ] submit ao Play precisa service-account JSON do Google (Passo 4)
 
 PASSO 4 — Play Console (teste interno)
   [ ] Conta dev (US$25) + criar app
