@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.showasoul.logmydance",
+      "buildNumber": "1",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Log My Dance needs access to your photo library to import dance videos.",
         "NSPhotoLibraryAddUsageDescription": "Log My Dance saves the dance videos you record to your photo library.",
@@ -27,6 +28,7 @@
         "backgroundColor": "#0a0a0a"
       },
       "package": "com.showasoul.logmydance",
+      "versionCode": 1,
       "targetSdkVersion": 35
     },
     "plugins": [
@@ -65,7 +67,7 @@
     },
     "extra": {
       "sentryDsn": "",
-      "feedbackEmail": ""
+      "feedbackEmail": "showasoul@icloud.com"
     }
   }
 }
