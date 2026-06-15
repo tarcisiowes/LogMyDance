@@ -2,6 +2,7 @@
   "expo": {
     "name": "LogMyDance",
     "slug": "LogMyDance",
+    "owner": "showa-soul",
     "version": "1.0.0",
     "scheme": "logmydance",
     "orientation": "portrait",
@@ -30,7 +31,16 @@
       },
       "package": "com.showasoul.logmydance",
       "versionCode": 1,
-      "targetSdkVersion": 35
+      "targetSdkVersion": 35,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -68,7 +78,11 @@
     },
     "extra": {
       "sentryDsn": "",
-      "feedbackEmail": "showasoul@icloud.com"
+      "feedbackEmail": "showasoul@icloud.com",
+      "router": {},
+      "eas": {
+        "projectId": "cd3b9ae5-c27d-48cf-81dc-69406c4e26ce"
+      }
     }
   }
 }
