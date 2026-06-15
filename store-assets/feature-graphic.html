@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  .stage {
+    width: 1024px; height: 500px; background: #0a0a0a;
+    position: relative; overflow: hidden;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .glyph { position: absolute; left: 96px; top: 0; height: 500px; display: flex; align-items: center; }
+  .txt {
+    position: absolute; left: 430px; top: 0; right: 80px; height: 500px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .brand { color: #fafaf9; font-size: 82px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+  .brand b { color: #f26d4f; font-weight: 800; }
+  .tag { color: #b5b1ad; font-size: 30px; margin-top: 26px; font-weight: 500; max-width: 470px; line-height: 1.4; }
+  .c { fill: #f26d4f; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="glyph">
+      <svg width="300" height="300" viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="c" cx="36"  cy="208" r="6"  opacity="0.22" />
+        <circle class="c" cx="78"  cy="198" r="9"  opacity="0.42" />
+        <circle class="c" cx="138" cy="180" r="27" />
+        <ellipse class="c" cx="210" cy="150" rx="76" ry="49" transform="rotate(-16 210 150)" />
+      </svg>
+    </div>
+    <div class="txt">
+      <div class="brand">Log<b>My</b>Dance</div>
+      <div class="tag">Your private dance journal — log classes, track movements, master your footwork.</div>
+    </div>
+  </div>
+</body>
+</html>
