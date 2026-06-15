@@ -129,8 +129,10 @@ PASSO 3 — Build assinado
          buildar local p/ store, corrigir signingConfigs.release primeiro.
   [x] Criar eas.json (profiles development/preview/production + submit track=internal)
   [x] eas login + eas init (extra.eas.projectId criado)
-  [ ] Gerar .aab: `eas build -p android --profile production` (consome build credit)
-  [ ] Verificar minificação/tamanho do .aab
+  [x] .aab ASSINADO gerado via EAS (build 03a18733, versionCode 4, ~79MB, R8 on):
+      https://expo.dev/artifacts/eas/a9At01kOgbV2sgUv2AJ5UGuDBUAVt51q7IZODsCzILI.aab
+      (Fixes no caminho: removido override morto react-dom; SENTRY_DISABLE_AUTO_UPLOAD
+       no eas.json env; add react-native-worklets. Verificado verde local antes.)
   [ ] submit ao Play precisa service-account JSON do Google (Passo 4)
 
 PASSO 4 — Play Console (teste interno)
@@ -150,7 +152,7 @@ PASSO 4 — Play Console (teste interno)
 |---|---|
 | **Features do MVP prontas?** | **Sim** — código acima do MVP do roadmap. |
 | **Roda em device hoje?** | **Sim** (2026-06-15) — `expo run:android` OK, nativos linkados, sequence+áudio testado. Falta só validar roundtrip de backup. |
-| **Pode subir no Google Play hoje?** | **Não** — assina com debug key, ícone placeholder, sem `.aab`, sem keystore, Privacy Policy sem URL. |
+| **Pode subir no Google Play hoje?** | **Quase** (2026-06-15) — .aab assinado pronto (EAS), ícone real, keystore EAS, Privacy URL live. Falta só: conta dev Google (US$25) + criar app + ficha (Data Safety/rating/screenshots) no console. |
 | **Maior risco técnico** | Backup zip (`react-native-zip-archive`) nunca testado em device — é quality gate do roadmap. |
 | **Esforço restante** | Baixo em código; concentrado em **ops/build/contas/assets de store**. |
 
