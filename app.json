@@ -30,7 +30,7 @@
         "backgroundColor": "#0a0a0a"
       },
       "package": "com.showasoul.logmydance",
-      "versionCode": 4,
+      "versionCode": 5,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
